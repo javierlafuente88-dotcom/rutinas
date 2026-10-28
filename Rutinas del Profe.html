@@ -1,0 +1,244 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Rutinas del Profe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: una columna de celu con dos pestañas arriba: Editor (profe) y Vista del alumno. */
+:root {
+  --bg: #f3f2ef; --surface: #ffffff; --surface-2: #ebeae6; --fg: #1b1c20; --muted: #62646c; --line: #d9d8d3;
+  --accent: #c2410c; --accent-fg: #ffffff; --ok: #15803d; --danger: #b91c1c;
+  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #121316; --surface: #1c1d22; --surface-2: #26272d; --fg: #f1f0ec; --muted: #a2a4ac; --line: #34353c; --accent: #f08a3c; --accent-fg: #1a1208; --ok: #4ade80; --danger: #f87171; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #121316; --surface: #1c1d22; --surface-2: #26272d; --fg: #f1f0ec; --muted: #a2a4ac; --line: #34353c; --accent: #f08a3c; --accent-fg: #1a1208; --ok: #4ade80; --danger: #f87171; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.4;
+  padding-block: 16px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1 { font-family: var(--font-display); font-size: 40px; line-height: 1; margin: 0; text-transform: uppercase; }
+h2 { font-family: var(--font-display); font-size: 20px; letter-spacing: .08em; text-transform: uppercase; margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border-radius: 12px; padding: 4px; gap: 4px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+.tabs button { border: 0; background: transparent; height: 44px; border-radius: 9px; font-weight: 600; font-size: 14px; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / .18); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.note { margin: 0; font-size: 13px; color: var(--muted); }
+.field { height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); padding: 0 10px; min-width: 0; width: 100%; }
+.btn { height: 44px; padding: 0 16px; border-radius: 10px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: 600; font-size: 14px; white-space: nowrap; }
+.btn.solid { background: var(--accent); color: var(--accent-fg); }
+.btn.quiet { border-color: var(--line); color: var(--muted); }
+.btn.danger { border-color: var(--line); color: var(--danger); }
+.btn.wa { background: #1f9d55; border-color: #1f9d55; color: #fff; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.btn.file { position: relative; display: inline-flex; align-items: center; overflow: hidden; }
+.btn.file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+
+/* Editor */
+.lib { display: flex; flex-direction: column; }
+.libitem { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.libitem:first-child { border-top: 0; }
+.thumb { width: 52px; height: 40px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; flex-shrink: 0; display: grid; place-items: center; font-size: 10px; color: var(--muted); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.libname { font-weight: 600; min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.bedit { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.bgrid { display: grid; grid-template-columns: 64px 1fr 72px; gap: 8px; }
+.lbl { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; display: flex; flex-direction: column; gap: 4px; }
+.exedit { display: grid; grid-template-columns: 1fr 64px; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); }
+.exedit .opts { grid-column: 1 / -1; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+.exedit label.chk { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.exedit input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+.x { height: 36px; border: 0; background: none; color: var(--danger); font-weight: 600; font-size: 13px; padding: 0 4px; }
+
+/* Link */
+.linkbox { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; overflow-wrap: anywhere; user-select: all; }
+.badge { display: inline-block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); }
+
+/* Vista del alumno */
+.bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+.section-label { font-family: var(--font-display); font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.bhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 14px 12px; }
+.btitle { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.bcode { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; }
+.bname { font-weight: 600; font-size: 15px; }
+.series { display: flex; gap: 4px; justify-content: flex-end; flex-shrink: 0; }
+.chip { min-width: 34px; height: 36px; padding: 0 6px; border-radius: 10px; border: 1.5px solid var(--line); background: transparent; font-size: 13px; font-weight: 600; }
+.chip[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.ex { border-top: 1px solid var(--line); }
+.exbtn { width: 100%; display: grid; grid-template-columns: 1fr auto 20px; align-items: center; gap: 10px; background: none; border: 0; padding: 14px; text-align: left; min-height: 56px; }
+.exname { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.exreps { font-family: var(--font-display); font-size: 22px; font-weight: 600; white-space: nowrap; }
+.exreps small { font-family: var(--font-body); font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.caret { width: 10px; height: 10px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; justify-self: center; margin-top: -4px; }
+.exbtn[aria-expanded="true"] .caret { transform: rotate(225deg); margin-top: 4px; }
+.detail { padding: 0 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.media { position: relative; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; }
+.media img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 16px;
+  background: repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--fg) 5%, transparent) 14px 28px); }
+.ph b { font-family: var(--font-display); font-size: 20px; letter-spacing: .04em; text-transform: uppercase; }
+.ph span { font-size: 13px; color: var(--muted); }
+.kg { display: flex; align-items: center; gap: 8px; }
+.kg label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.kg input { width: 88px; height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); font-size: 18px; padding: 0 10px; text-align: right; }
+.cue { color: var(--muted); font-size: 14px; margin: 0; }
+.empty { text-align: center; color: var(--muted); padding: 24px 8px; }
+</style>
+
+<div class="wrap">
+  <div>
+    <div class="eyebrow">Demo del flujo del profe</div>
+    <h1 id="title">Rutinas</h1>
+  </div>
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="t-ed" data-tab="editor" aria-selected="true">1 · Editor del profe</button>
+    <button type="button" role="tab" id="t-al" data-tab="alumno" aria-selected="false">2 · Lo que ve el alumno</button>
+  </div>
+  <div id="view" class="wrap" style="gap:16px"></div>
+</div>
+
+<script>
+var lib = [
+  ["carpa","Carpa"],["spider","Spider"],["9090","90-90"],["catcamel","Cat camel"],["copa","Copa"],["split","Split rotación"],
+  ["gluteos","Glúteos marcha lateral"],["swing","Swing de cadera"],["soga","Soga"],["press","Press plano"],
+  ["cuad","Cuádriceps camilla"],["vuelos","Vuelos posteriores"],["triceps","Tríceps polea"],["puente","Puente lateral"]
+].map(function (a) { return { id: a[0], name: a[1] }; });
+
+var S = {
+  tab: "editor", open: null, gif: {}, done: {}, kg: {}, link: false, copied: false,
+  titulo: "Sesión de fuerza", dia: "Día 1",
+  blocks: [
+    { code: "A1", name: "Movilidad", series: 1, section: "Movilidad y activación", ex: [{ id: "carpa", reps: "10" }, { id: "spider", reps: "5", lado: true }, { id: "9090", reps: "10", lado: true }, { id: "catcamel", reps: "10" }] },
+    { code: "A2", name: "Activación", series: 3, ex: [{ id: "copa", reps: "6" }, { id: "split", reps: "5", lado: true }, { id: "gluteos", reps: "6", lado: true }] },
+    { code: "B1", name: "Cadera y core", series: 4, section: "Parte principal", ex: [{ id: "swing", reps: "8" }, { id: "soga", reps: "12", unit: "seg" }] },
+    { code: "B2", name: "Empuje", series: 5, ex: [{ id: "press", reps: "8", kg: true }] },
+    { code: "B3", name: "Piernas", series: 5, ex: [{ id: "cuad", reps: "8", lado: true, kg: true }] },
+    { code: "B4", name: "Complemento", series: 3, ex: [{ id: "vuelos", reps: "8", kg: true }, { id: "triceps", reps: "8", lado: true, kg: true, cue: "Variante skiador." }, { id: "puente", reps: "8", lado: true, cue: "Subo y bajo." }] }
+  ]
+};
+var view = document.getElementById("view");
+function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function name(id) { var l = lib.filter(function (x) { return x.id === id; })[0]; return l ? l.name : id; }
+function opts(sel) { return lib.map(function (l) { return '<option value="' + l.id + '"' + (l.id === sel ? " selected" : "") + ">" + esc(l.name) + "</option>"; }).join(""); }
+
+/* ---------- Editor ---------- */
+function linkText() {
+  var data = { t: S.titulo, d: S.dia, b: S.blocks.map(function (b) { return [b.code, b.name, b.series, b.ex.map(function (e) { return [e.id, e.reps, e.lado ? 1 : 0, e.kg ? 1 : 0, e.unit || "", e.cue || ""]; })]; }) };
+  var s = btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=+$/, "");
+  var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return "https://tu-pagina.com/r/" + h.toString(36).slice(0, 6);
+}
+function editor() {
+  var h = '<div class="card"><h2>Rutina de la semana</h2><div class="row"><div class="grow lbl">Título<input class="field" data-f="titulo" value="' + esc(S.titulo) + '"></div><div class="lbl" style="width:100px">Día<input class="field" data-f="dia" value="' + esc(S.dia) + '"></div></div></div>';
+  S.blocks.forEach(function (b, bi) {
+    h += '<div class="bedit"><div class="bgrid"><label class="lbl">Bloque<input class="field" data-b="' + bi + '" data-k="code" value="' + esc(b.code) + '"></label>'
+      + '<label class="lbl">Nombre<input class="field" data-b="' + bi + '" data-k="name" value="' + esc(b.name) + '"></label>'
+      + '<label class="lbl">Series<input class="field" type="number" min="1" max="10" inputmode="numeric" data-b="' + bi + '" data-k="series" value="' + b.series + '"></label></div>';
+    b.ex.forEach(function (e, ei) {
+      h += '<div class="exedit"><select class="field" data-b="' + bi + '" data-e="' + ei + '" data-k="id" aria-label="Ejercicio">' + opts(e.id) + '</select>'
+        + '<input class="field" data-b="' + bi + '" data-e="' + ei + '" data-k="reps" value="' + esc(e.reps) + '" inputmode="numeric" aria-label="Repeticiones">'
+        + '<div class="opts"><label class="chk"><input type="checkbox" data-b="' + bi + '" data-e="' + ei + '" data-k="lado"' + (e.lado ? " checked" : "") + '> Por lado</label>'
+        + '<label class="chk"><input type="checkbox" data-b="' + bi + '" data-e="' + ei + '" data-k="kg"' + (e.kg ? " checked" : "") + '> Pide kilos</label>'
+        + '<button type="button" class="x" data-rmex="' + bi + ":" + ei + '">Quitar</button></div></div>';
+    });
+    h += '<div class="row"><button type="button" class="btn" data-addex="' + bi + '">+ Ejercicio</button><button type="button" class="btn danger" data-rmb="' + bi + '">Borrar bloque</button></div></div>';
+  });
+  h += '<button type="button" class="btn" data-addb="1">+ Agregar bloque</button>';
+
+  h += '<div class="card"><h2>Generar link</h2><p class="note">Genera un link con esta rutina adentro. Se lo mandás al alumno por WhatsApp y se abre en cualquier celular.</p>'
+    + '<button type="button" class="btn solid" data-gen="1">Generar link de la rutina</button>';
+  if (S.link) {
+    var l = linkText();
+    h += '<span class="badge">Link de ejemplo</span><div class="linkbox">' + esc(l) + '</div><div class="row">'
+      + '<button type="button" class="btn grow" data-copy="1">' + (S.copied ? "Copiado" : "Copiar link") + '</button>'
+      + '<a class="btn wa grow" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent("Tu rutina de hoy: " + l) + '">WhatsApp</a></div>'
+      + '<p class="note">Acá el link es de muestra. En la versión final es un link corto a la página real, con la rutina adentro.</p>'
+      + '<button type="button" class="btn quiet" data-tab="alumno">Ver cómo lo abre el alumno</button>';
+  }
+  h += "</div>";
+
+  h += '<div class="card"><h2>Biblioteca de ejercicios</h2><p class="note">Cada ejercicio se sube una sola vez con su GIF. Después aparece en todas las rutinas.</p><div class="lib">';
+  lib.forEach(function (l) {
+    h += '<div class="libitem"><div class="thumb">' + (S.gif[l.id] ? '<img src="' + S.gif[l.id] + '" alt="">' : "sin GIF") + '</div><div class="libname">' + esc(l.name) + '</div>'
+      + '<span class="btn file">' + (S.gif[l.id] ? "Cambiar" : "Subir GIF") + '<input type="file" accept="image/*,video/*" data-up="' + l.id + '" aria-label="Subir GIF de ' + esc(l.name) + '"></span></div>';
+  });
+  h += '</div><div class="row"><input id="newex" class="field grow" placeholder="Ejercicio nuevo, ej: Remo con barra"><button type="button" class="btn" data-newex="1">Agregar</button></div></div>';
+  return h;
+}
+
+/* ---------- Alumno ---------- */
+function alumno() {
+  var total = 0, hechas = 0, h = '<div><div class="eyebrow">Programa de entrenamiento · ' + esc(S.dia) + '</div><h1 style="margin-top:4px">' + esc(S.titulo) + '</h1></div><div class="bar" aria-hidden="true"><i style="width:__P__%"></i></div><div class="note" style="margin-top:-8px">__T__</div>';
+  S.blocks.forEach(function (b) {
+    var d = Math.min(S.done[b.code] || 0, b.series); total += b.series; hechas += d;
+    if (b.section) h += '<div class="section-label">' + esc(b.section) + "</div>";
+    h += '<section class="block"><div class="bhead"><div class="btitle"><span class="bcode">' + esc(b.code) + '</span><span class="bname">' + esc(b.name) + '</span></div><div class="series">';
+    for (var i = 1; i <= b.series; i++) h += '<button type="button" class="chip" data-serie="' + esc(b.code) + ":" + i + '" aria-pressed="' + (i <= d) + '" aria-label="Serie ' + i + '">' + (b.series === 1 ? "Hecha" : i) + "</button>";
+    h += "</div></div>";
+    b.ex.forEach(function (e) {
+      var key = b.code + e.id, open = S.open === key, g = S.gif[e.id];
+      h += '<div class="ex"><button type="button" class="exbtn" data-ex="' + esc(key) + '" aria-expanded="' + open + '"><span class="exname">' + esc(name(e.id)) + '</span><span class="exreps">' + esc(e.reps) + (e.unit ? "<small>" + e.unit + "</small>" : "") + (e.lado ? "<small>por lado</small>" : "") + '</span><span class="caret"></span></button>';
+      if (open) {
+        h += '<div class="detail"><div class="media">' + (g ? '<img src="' + g + '" alt="Cómo hacer ' + esc(name(e.id)) + '">' : '<div class="ph"><b>' + esc(name(e.id)) + "</b><span>Acá va el GIF del profe</span></div>") + "</div>";
+        if (e.cue) h += '<p class="cue">' + esc(e.cue) + "</p>";
+        if (e.kg) h += '<div class="kg"><label for="kg-' + esc(key) + '">Carga</label><input id="kg-' + esc(key) + '" data-kg="' + esc(key) + '" type="number" inputmode="decimal" min="0" step="0.5" placeholder="0" value="' + esc(S.kg[key] || "") + '"><span><b>kg</b></span></div>';
+        h += "</div>";
+      }
+      h += "</div>";
+    });
+    h += "</section>";
+  });
+  if (!S.blocks.length) return '<div class="empty">Todavía no hay bloques. Armalos en el editor.</div>';
+  return h.replace("__P__", total ? hechas / total * 100 : 0).replace("__T__", hechas + " de " + total + " series hechas");
+}
+
+function render() {
+  document.getElementById("t-ed").setAttribute("aria-selected", S.tab === "editor");
+  document.getElementById("t-al").setAttribute("aria-selected", S.tab === "alumno");
+  view.innerHTML = S.tab === "editor" ? editor() : alumno();
+}
+
+document.addEventListener("click", function (ev) {
+  var t = ev.target.closest("button"); if (!t) return;
+  var d = t.dataset;
+  if (d.tab) { S.tab = d.tab; render(); window.scrollTo(0, 0); return; }
+  if (d.ex) { S.open = S.open === d.ex ? null : d.ex; render(); return; }
+  if (d.serie) { var p = d.serie.split(":"), n = +p[1]; S.done[p[0]] = (S.done[p[0]] || 0) === n ? n - 1 : n; render(); return; }
+  if (d.gen) { S.link = true; S.copied = false; render(); return; }
+  if (d.copy) {
+    var done = function () { S.copied = true; render(); };
+    try { navigator.clipboard.writeText(linkText()).then(done, function () { var b = view.querySelector(".linkbox"); if (b) { var r = document.createRange(); r.selectNodeContents(b); var s = getSelection(); s.removeAllRanges(); s.addRange(r); } }); } catch (e) {}
+    return;
+  }
+  if (d.addb) { S.blocks.push({ code: "B" + (S.blocks.length + 1), name: "Nuevo bloque", series: 3, ex: [{ id: lib[0].id, reps: "10" }] }); S.link = false; render(); return; }
+  if (d.rmb) { S.blocks.splice(+d.rmb, 1); S.link = false; render(); return; }
+  if (d.addex) { S.blocks[+d.addex].ex.push({ id: lib[0].id, reps: "10" }); S.link = false; render(); return; }
+  if (d.rmex) { var q = d.rmex.split(":"); S.blocks[+q[0]].ex.splice(+q[1], 1); S.link = false; render(); return; }
+  if (d.newex) {
+    var inp = document.getElementById("newex"), v = inp.value.trim();
+    if (v) { lib.push({ id: "x" + Date.now(), name: v }); render(); }
+  }
+});
+view.addEventListener("input", function (ev) { var k = ev.target.dataset.kg; if (k) S.kg[k] = ev.target.value; });
+view.addEventListener("change", function (ev) {
+  var el = ev.target, d = el.dataset;
+  if (d.up) { var f = el.files && el.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { S.gif[d.up] = r.result; render(); }; r.readAsDataURL(f); return; }
+  if (d.f) { S[d.f] = el.value; S.link = false; render(); return; }
+  if (d.b != null && d.k) {
+    var b = S.blocks[+d.b], tgt = d.e != null ? b.ex[+d.e] : b, val = el.type === "checkbox" ? el.checked : el.value;
+    if (d.k === "series") val = Math.max(1, Math.min(10, parseInt(val, 10) || 1));
+    tgt[d.k] = val; S.link = false; render();
+  }
+});
+render();
+</script>
+
+</body></html>

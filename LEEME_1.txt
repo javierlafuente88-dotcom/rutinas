@@ -1,0 +1,58 @@
+RUTINAS CON GIF - INSTRUCTIVO PARA EL PROFE
+===========================================
+
+QUE HAY EN ESTA CARPETA
+  editor.html   Donde armas la rutina (se abre con doble clic, en tu compu o celu).
+  index.html    La pagina que ve el alumno. No la abris vos: se publica una vez.
+  gifs/         Los GIFs de cada ejercicio.
+
+PASO 1 - PONER LOS GIFS (una sola vez)
+  Copia tus GIFs a la carpeta "gifs" y ponele a cada uno el nombre exacto
+  que aparece en el editor, en la seccion "Biblioteca de ejercicios".
+  Ejemplos:
+     carpa.gif
+     spider.gif
+     90-90.gif
+     cat-camel.gif
+     copa.gif
+     split-rotacion.gif
+     gluteos-marcha-lateral.gif
+     swing-de-cadera.gif
+     soga.gif
+     press-plano.gif
+     cuadriceps-camilla.gif
+     vuelos-posteriores.gif
+     triceps-polea.gif
+     puente-lateral.gif
+  Todo en minusculas, sin tildes, con guiones en vez de espacios y terminado en .gif.
+  Si un ejercicio no tiene GIF, al alumno le sale el nombre solo, sin error.
+
+PASO 2 - PUBLICAR LA PAGINA (una sola vez, gratis)
+  1. Entra a https://app.netlify.com/drop
+  2. Crea una cuenta gratis (con Google alcanza). Sin cuenta, la pagina se borra al rato.
+  3. Arrastra la carpeta COMPLETA (la que tiene index.html y gifs) al recuadro.
+  4. Te da una direccion tipo https://nombre-raro.netlify.app
+     Copiala. Podes cambiarle el nombre en la configuracion del sitio.
+
+PASO 3 - ARMAR Y MANDAR LA RUTINA (cada semana)
+  1. Abri editor.html.
+  2. La primera vez, pega la direccion de tu pagina en "Direccion de tu pagina".
+     Queda guardada.
+  3. Arma la rutina: bloques, ejercicios, series, repeticiones.
+  4. Toca "Generar link de la rutina".
+  5. Toca "WhatsApp" (o "Copiar link") y mandaselo al alumno.
+  El alumno abre el link en su celu: ve la rutina, toca cada ejercicio para ver el GIF,
+  tilda las series y anota los kilos. No instala nada.
+
+CUANDO SUMES EJERCICIOS NUEVOS
+  1. En el editor, en "Biblioteca de ejercicios", escribi el nombre y toca "Agregar".
+  2. Debajo te muestra el nombre del archivo (ej: gifs/remo-con-barra.gif).
+  3. Guarda el GIF en la carpeta "gifs" con ese nombre.
+  4. Volve a arrastrar la carpeta completa a Netlify (en la seccion Deploys).
+     Los links viejos siguen funcionando.
+
+NOTAS
+  - El editor guarda tu rutina sola en ese navegador. Si cambias de compu o navegador,
+    arranca de nuevo con la rutina de ejemplo.
+  - Cada link lleva la rutina escrita adentro: no hay que subir nada cada semana.
+  - Los GIFs livianos (menos de 2 MB) cargan mas rapido en el celu del alumno.

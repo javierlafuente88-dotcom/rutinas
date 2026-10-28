@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi rutina</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #f3f2ef; --surface: #ffffff; --surface-2: #ebeae6; --fg: #1b1c20; --muted: #62646c; --line: #d9d8d3;
+  --accent: #c2410c; --accent-fg: #ffffff; --ok: #15803d; --danger: #b91c1c;
+  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #121316; --surface: #1c1d22; --surface-2: #26272d; --fg: #f1f0ec; --muted: #a2a4ac; --line: #34353c; --accent: #f08a3c; --accent-fg: #1a1208; --ok: #4ade80; --danger: #f87171; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.4;
+  padding: 16px 16px 56px; }
+.wrap { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1 { font-family: var(--font-display); font-size: 40px; line-height: 1; margin: 0; text-transform: uppercase; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 20px; letter-spacing: .08em; text-transform: uppercase; margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.note { margin: 0; font-size: 13px; color: var(--muted); }
+.field { height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); padding: 0 10px; min-width: 0; width: 100%; }
+.btn { height: 44px; padding: 0 16px; border-radius: 10px; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font-weight: 600; font-size: 14px; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.btn.solid { background: var(--accent); color: var(--accent-fg); }
+.btn.quiet { border-color: var(--line); color: var(--muted); }
+.btn.danger { border-color: var(--line); color: var(--danger); }
+.btn.wa { background: #1f9d55; border-color: #1f9d55; color: #fff; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); transition: width .25s; }
+.section-label { font-family: var(--font-display); font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.bhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 14px 12px; }
+.btitle { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.bcode { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; }
+.bname { font-weight: 600; font-size: 15px; }
+.series { display: flex; gap: 4px; justify-content: flex-end; flex-shrink: 0; }
+.chip { min-width: 34px; height: 36px; padding: 0 6px; border-radius: 10px; border: 1.5px solid var(--line); background: transparent; font-size: 13px; font-weight: 600; }
+.chip[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.ex { border-top: 1px solid var(--line); }
+.exbtn { width: 100%; display: grid; grid-template-columns: 1fr auto 20px; align-items: center; gap: 10px; background: none; border: 0; padding: 14px; text-align: left; min-height: 56px; }
+.exname { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.exreps { font-family: var(--font-display); font-size: 22px; font-weight: 600; white-space: nowrap; }
+.exreps small { font-family: var(--font-body); font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.caret { width: 10px; height: 10px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg); transition: transform .2s; justify-self: center; margin-top: -4px; }
+.exbtn[aria-expanded="true"] .caret { transform: rotate(225deg); margin-top: 4px; }
+.detail { padding: 0 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.media { position: relative; aspect-ratio: 4 / 3; max-width: 100%; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; }
+.media img { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+.ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 16px;
+  background: repeating-linear-gradient(135deg, transparent 0 14px, rgba(127,127,127,.08) 14px 28px); }
+.ph b { font-family: var(--font-display); font-size: 20px; letter-spacing: .04em; text-transform: uppercase; }
+.ph span { font-size: 13px; color: var(--muted); }
+.kg { display: flex; align-items: center; gap: 8px; }
+.kg label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.kg input { width: 88px; height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); font-size: 18px; padding: 0 10px; text-align: right; }
+.cue { color: var(--muted); font-size: 14px; margin: 0; }
+.empty { text-align: center; color: var(--muted); padding: 32px 8px; }
+
+body { padding-top: max(16px, env(safe-area-inset-top)); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="empty">Cargando…</div></div>
+<script>
+function esc(t) { return String(t == null ? "" : t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function slug(n) { return String(n).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "ejercicio"; }
+function b64u(bytes) { var s = ""; for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function unb64u(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+async function pipe(bytes, stream) { var r = new Response(new Blob([bytes]).stream().pipeThrough(stream)); return new Uint8Array(await r.arrayBuffer()); }
+/* Rutina -> texto corto para el link. Prefijo z = comprimido, p = sin comprimir. */
+async function encodeRoutine(obj) {
+  var bytes = new TextEncoder().encode(JSON.stringify(obj));
+  try { if (typeof CompressionStream !== "undefined") return "z" + b64u(await pipe(bytes, new CompressionStream("deflate-raw"))); } catch (e) {}
+  return "p" + b64u(bytes);
+}
+async function decodeRoutine(s) {
+  var kind = s.charAt(0), bytes = unb64u(s.slice(1));
+  if (kind === "z") bytes = await pipe(bytes, new DecompressionStream("deflate-raw"));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+var R = null, key = "", open = null, done = {}, kgs = {};
+var app = document.getElementById("app");
+
+function load() {
+  try { var s = JSON.parse(localStorage.getItem("prog:" + key) || "{}"); done = s.done || {}; kgs = s.kg || {}; } catch (e) { done = {}; kgs = {}; }
+}
+function save() { try { localStorage.setItem("prog:" + key, JSON.stringify({ done: done, kg: kgs })); } catch (e) {} }
+
+function gifHtml(e) {
+  return '<img src="gifs/' + esc(e.i) + '.gif" alt="Cómo hacer ' + esc(e.n) + '" data-n="' + esc(e.n) + '" onerror="phFail(this)">';
+}
+function phFail(img) {
+  var d = img.parentNode; d.innerHTML = '<div class="ph"><b>' + esc(img.dataset.n) + '</b><span>Este ejercicio todavía no tiene GIF</span></div>';
+}
+
+function render() {
+  if (!R) { app.innerHTML = '<div class="empty"><b>Esta página muestra tu rutina.</b><br>Abrí el link que te mandó tu profe por WhatsApp.</div>'; return; }
+  var total = 0, hechas = 0;
+  var h = '<div><div class="eyebrow">Programa de entrenamiento' + (R.d ? " · " + esc(R.d) : "") + '</div><h1 style="margin-top:4px">' + esc(R.t) + '</h1></div><div class="bar" aria-hidden="true"><i id="fill"></i></div><div class="note" id="ptext" style="margin-top:-8px"></div>';
+  R.b.forEach(function (b) {
+    var dn = Math.min(done[b.c] || 0, b.s); total += b.s; hechas += dn;
+    if (b.sec) h += '<div class="section-label">' + esc(b.sec) + "</div>";
+    h += '<section class="block"><div class="bhead"><div class="btitle"><span class="bcode">' + esc(b.c) + '</span><span class="bname">' + esc(b.n) + '</span></div><div class="series">';
+    for (var i = 1; i <= b.s; i++) h += '<button type="button" class="chip" data-serie="' + esc(b.c) + ":" + i + '" aria-pressed="' + (i <= dn) + '" aria-label="Serie ' + i + '">' + (b.s === 1 ? "Hecha" : i) + "</button>";
+    h += "</div></div>";
+    b.e.forEach(function (e) {
+      var k = b.c + "|" + e.i, op = open === k;
+      h += '<div class="ex"><button type="button" class="exbtn" data-ex="' + esc(k) + '" aria-expanded="' + op + '"><span class="exname">' + esc(e.n) + '</span><span class="exreps">' + esc(e.r) + (e.u ? "<small>seg</small>" : "") + (e.l ? "<small>por lado</small>" : "") + '</span><span class="caret"></span></button>';
+      if (op) {
+        h += '<div class="detail"><div class="media">' + gifHtml(e) + "</div>";
+        if (e.c) h += '<p class="cue">' + esc(e.c) + "</p>";
+        if (e.k) h += '<div class="kg"><label for="kg">Carga</label><input id="kg" data-kg="' + esc(k) + '" type="number" inputmode="decimal" min="0" step="0.5" placeholder="0" value="' + esc(kgs[k] || "") + '"><span><b>kg</b></span></div>';
+        h += "</div>";
+      }
+      h += "</div>";
+    });
+    h += "</section>";
+  });
+  app.innerHTML = h;
+  document.getElementById("fill").style.width = (total ? hechas / total * 100 : 0) + "%";
+  document.getElementById("ptext").textContent = hechas + " de " + total + " series hechas";
+  document.title = R.t;
+}
+
+app.addEventListener("click", function (ev) {
+  var t = ev.target.closest("button"); if (!t) return;
+  if (t.dataset.ex) { open = open === t.dataset.ex ? null : t.dataset.ex; render(); return; }
+  if (t.dataset.serie) { var p = t.dataset.serie.split(":"), n = +p[1]; done[p[0]] = (done[p[0]] || 0) === n ? n - 1 : n; save(); render(); }
+});
+app.addEventListener("input", function (ev) { if (ev.target.dataset.kg) { kgs[ev.target.dataset.kg] = ev.target.value; save(); } });
+
+async function boot() {
+  var h = location.hash.replace(/^#/, "");
+  R = null;
+  if (h) { try { R = await decodeRoutine(h); key = h; load(); } catch (e) { R = null; } }
+  render();
+}
+window.addEventListener("hashchange", boot);
+boot();
+</script>
+</body>
+</html>

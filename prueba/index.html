@@ -6,6 +6,7 @@
 <title>Coach Luciano Villafane · Rutinas</title>
 <meta name="description" content="Tu rutina de entrenamiento con el GIF de cada ejercicio.">
 <meta property="og:title" content="Coach Luciano Villafane · Tu rutina de entrenamiento">
+<meta property="og:image" content="https://javierlafuente88-dotcom.github.io/rutinas/prueba/coach.jpg">
 <meta property="og:description" content="Tu rutina con el GIF de cada ejercicio. Tocá el link y empezá a entrenar.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
@@ -18,7 +19,10 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 h1{font-family:var(--font-display);font-size:38px;line-height:1;margin:0;text-transform:uppercase}
 h2{font-family:var(--font-display);font-size:20px;letter-spacing:.08em;text-transform:uppercase;margin:0}
-.marca{font-family:var(--font-display);font-size:16px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+.head{display:flex;gap:14px;align-items:center}
+.avatar{width:76px;height:76px;border-radius:50%;object-fit:cover;object-position:50% 25%;border:3px solid var(--accent);flex-shrink:0;background:var(--surface-2)}
+.head h1{font-size:34px}
+.marca{font-family:var(--font-display);font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
 .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
 .note{margin:0;font-size:13px;color:var(--muted)}
@@ -79,7 +83,7 @@ ol.steps{padding-left:20px;margin:8px 0;line-height:1.55;font-size:14px}code{bac
 </head>
 <body>
 <div class="wrap">
-  <div><div class="marca" id="marca"></div><div class="eyebrow" id="eyebrow">Armado de rutinas</div><h1 id="title">Rutinas del Profe</h1></div>
+  <div class="head"><img class="avatar" src="coach.jpg" alt="" onerror="this.style.display='none'"><div><div class="marca" id="marca"></div><div class="eyebrow" id="eyebrow">Armado de rutinas</div><h1 id="title">Rutinas del Profe</h1></div></div>
   <div class="tabs" id="tabs">
     <button id="tEd" aria-selected="true" onclick="go('ed')">1 · Editor del profe</button>
     <button id="tAl" aria-selected="false" onclick="go('al')">2 · Lo que ve el alumno</button>

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demo · Coach Luciano Villafane</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f3f2ef;--surface:#fff;--surface-2:#ebeae6;--fg:#1b1c20;--muted:#62646c;--line:#d9d8d3;--accent:#c2410c;--accent-fg:#fff;--ok:#15803d;--danger:#b91c1c;--warn:#b45309;
+  --font-display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--font-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#121316;--surface:#1c1d22;--surface-2:#26272d;--fg:#f1f0ec;--muted:#a2a4ac;--line:#34353c;--accent:#f08a3c;--accent-fg:#1a1208;--ok:#4ade80;--danger:#f87171;--warn:#fbbf24;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.4;padding:16px 16px 60px}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+h1{font-family:var(--font-display);font-size:38px;line-height:1;margin:0;text-transform:uppercase}
+h2{font-family:var(--font-display);font-size:20px;letter-spacing:.08em;text-transform:uppercase;margin:0}
+.head{display:flex;gap:14px;align-items:center}
+.avatar{width:76px;height:76px;border-radius:50%;object-fit:cover;object-position:50% 25%;border:3px solid var(--accent);flex-shrink:0;background:var(--surface-2)}
+.head h1{font-size:34px}
+.marca{font-family:var(--font-display);font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.note{margin:0;font-size:13px;color:var(--muted)}
+.field{height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);padding:0 10px;min-width:0;width:100%}
+textarea.field{height:170px;padding:10px;resize:vertical;font-size:14px;line-height:1.35}
+.btn{height:44px;padding:0 16px;border-radius:10px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:600;font-size:14px;white-space:nowrap}
+.btn.solid{background:var(--accent);color:var(--accent-fg)}.btn.quiet{border-color:var(--line);color:var(--muted)}.btn.danger{border-color:var(--line);color:var(--danger)}
+.btn.wa{background:#1f9d55;border-color:#1f9d55;color:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.grow{flex:1;min-width:0}
+.lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;flex-direction:column;gap:4px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:0;background:transparent;height:44px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0/.18)}
+.hide{display:none!important}
+/* editor */
+.bedit{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.bgrid{display:grid;grid-template-columns:64px 1fr 72px;gap:8px}
+.exedit{display:grid;grid-template-columns:56px 1fr 78px;gap:8px;align-items:center;padding-top:10px;border-top:1px solid var(--line)}
+.exedit .opts{grid-column:1/-1;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:14px}
+.exedit label.chk{display:inline-flex;align-items:center;gap:6px;min-height:34px}
+.exedit input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+.thumb{width:56px;height:56px;border-radius:10px;background:var(--surface-2);border:1.5px dashed var(--line);overflow:hidden;display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;padding:0;cursor:pointer}
+.thumb.ok{border-style:solid}.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.x{border:0;background:none;color:var(--danger);font-weight:600;font-size:13px;padding:0 4px;height:34px}
+.tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted)}
+.tag.warn{color:var(--warn)}.tag.good{color:var(--ok)}
+.linkbox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px;overflow-wrap:anywhere;max-height:84px;overflow:auto}
+details summary{cursor:pointer;color:var(--accent);font-weight:600}
+ol.steps{padding-left:20px;margin:8px 0;line-height:1.55;font-size:14px}code{background:var(--surface-2);padding:1px 6px;border-radius:6px;font-size:13px}
+/* picker */
+#picker{position:fixed;inset:0;background:rgb(0 0 0/.55);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+#picker .sheet{background:var(--surface);width:100%;max-width:560px;max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pick{border:1.5px solid var(--line);border-radius:10px;background:var(--bg);padding:4px;display:flex;flex-direction:column;gap:4px;text-align:center;font-size:11px;word-break:break-word}
+.pick .m{aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--surface-2)}.pick .m img,.pick .m video{width:100%;height:100%;object-fit:cover}
+/* alumno */
+.bar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.section-label{font-family:var(--font-display);font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.bhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 14px 12px}
+.btitle{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}.bcode{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--accent);line-height:1}.bname{font-weight:600;font-size:15px}
+.series{display:flex;gap:4px;justify-content:flex-end;flex-shrink:0}
+.chip{min-width:34px;height:36px;padding:0 6px;border-radius:10px;border:1.5px solid var(--line);background:transparent;font-size:13px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.ex{border-top:1px solid var(--line)}
+.exbtn{width:100%;display:grid;grid-template-columns:1fr auto 20px;align-items:center;gap:10px;background:none;border:0;padding:14px;text-align:left;min-height:56px}
+.exname{font-weight:600;min-width:0;overflow-wrap:anywhere}.exreps{font-family:var(--font-display);font-size:22px;font-weight:600;white-space:nowrap}
+.caret{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;justify-self:center;margin-top:-4px}
+.exbtn[aria-expanded="true"] .caret{transform:rotate(225deg);margin-top:4px}
+.detail{padding:0 14px 16px;display:flex;flex-direction:column;gap:12px}
+.media{position:relative;border-radius:12px;overflow:hidden;background:#000;border:1px solid var(--line);display:grid;place-items:center;max-height:62vh}
+.media img,.media video{width:100%;max-height:62vh;object-fit:contain;display:block}
+.ph{padding:30px 16px;text-align:center;color:var(--muted);background:var(--surface-2);width:100%}
+.kg{display:flex;align-items:center;gap:10px}.kg input{width:110px;height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);padding:0 10px;font-size:18px}
+.cue{margin:0;color:var(--muted)}
+/* ===== demo: extras ===== */
+.demo-tag{display:inline-block;background:var(--accent);color:var(--accent-fg);font-size:11px;font-weight:700;letter-spacing:.12em;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.tabs{grid-template-columns:repeat(3,1fr)}
+.tabs button{font-size:13px;padding:0 4px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-family:var(--font-display);font-size:28px;line-height:1.1}
+.kpi span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.al{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:12px;align-items:center;width:100%;text-align:left}
+.ini{width:46px;height:46px;border-radius:50%;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-family:var(--font-display);font-size:20px;font-weight:700;flex-shrink:0}
+.al .nm{font-weight:600}.al .sub{font-size:13px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:110px;padding-top:6px}
+.bars .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;font-size:11px;color:var(--muted)}
+.bars .c i{display:block;width:100%;max-width:44px;background:var(--accent);border-radius:6px 6px 0 0;min-height:4px}
+.bars .c b{color:var(--fg);font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ses{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;align-items:flex-start}
+.ses .e{font-size:24px;line-height:1}
+.ses small{color:var(--muted)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;height:38px;border-radius:8px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0/.18)}
+.altbox{border:1.5px dashed var(--accent);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.altbox b{color:var(--accent)}
+.sens{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sens button{border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted)}
+.sens button span{font-size:26px;line-height:1.1}
+.sens button[aria-pressed="true"]{border-color:var(--accent);background:var(--surface-2);color:var(--fg);font-weight:600}
+.welcome{border-left:4px solid var(--accent);background:var(--surface);border-radius:0 12px 12px 0;padding:12px 14px;font-size:15px}
+.timer{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:2px solid var(--accent);padding:10px 16px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgb(0 0 0/.25)}
+.timer .in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.timer .t{font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1;min-width:84px;color:var(--accent)}
+.timer .lb{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.timer .pb{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:6px}.timer .pb i{display:block;height:100%;background:var(--accent);width:0}
+.timer.done{background:var(--ok);border-color:var(--ok)}.timer.done .t,.timer.done .lb{color:#fff}
+.rest{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.fld3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+textarea.mini{height:70px;padding:8px 10px;resize:vertical;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><img class="avatar" src="coach.jpg" alt="" onerror="this.style.display='none'"><div><div class="marca" id="marca">Coach Luciano Villafane</div><div class="eyebrow" id="eyebrow">Panel del profe</div><h1 id="title">Demo</h1></div></div>
+  <div class="tabs" id="tabs">
+    <button id="tPa" aria-selected="true" onclick="go('pa')">1 · Alumnos</button>
+    <button id="tEd" aria-selected="false" onclick="go('ed')">2 · Armar rutina</button>
+    <button id="tVi" aria-selected="false" onclick="go('vi')">3 · Alumno</button>
+  </div>
+  <div id="view" class="wrap" style="gap:16px"></div>
+</div>
+<div id="timer" class="timer hide"><div class="in">
+  <div class="t" id="tLeft">0:00</div>
+  <div class="grow"><div class="lb" id="tLbl">Descanso</div><div class="pb"><i id="tBar"></i></div></div>
+  <button class="btn sm quiet" onclick="addT(-15)">−15</button><button class="btn sm quiet" onclick="addT(15)">+15</button><button class="btn sm solid" onclick="stopRest()">Saltar</button>
+</div></div>
+
+<script>
+/* =====================================================================
+   DEMO: todo se guarda solo en este navegador (no toca la planilla).
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esVideo = f => /\.(mp4|webm|mov)$/i.test(f);
+const src = f => "gifs/" + encodeURIComponent(f);
+const media = f => esVideo(f) ? `<video src="${src(f)}" autoplay loop muted playsinline></video>` : `<img src="${src(f)}" alt="">`;
+const lsGet = (k,d) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } };
+const lsSet = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
+const KEY = "demo_profe_v1";
+
+const hoy = new Date();
+const dia = n => { const x = new Date(hoy); x.setDate(x.getDate()-n); return x.toISOString().slice(0,10); };
+const fmtF = iso => new Date(iso+"T12:00").toLocaleDateString("es-AR",{day:"numeric",month:"short"}).replace(".","");
+const diasDesde = iso => Math.round((hoy - new Date(iso+"T12:00"))/864e5);
+const EMO = ["","😫","😕","😐","🙂","😁"], ETQ = ["","Muy pesado","Pesado","Normal","Bien","Excelente"];
+
+function seed(){
+  return {
+    actual:"a1", prog:{done:{},kg:{},alt:{},sens:0,com:""},
+    alumnos:[
+      {id:"a1",nombre:"Marcos Díaz",edad:28,altura:178,tel:"387 555 0101",inicio:dia(70),objetivo:"Ganar fuerza y bajar grasa",nivel:"Intermedio",dias:3,
+        lesiones:"Molestia leve en el hombro derecho. Evitar empujes por encima de la cabeza.",notas:"Responde muy bien a la progresión de cargas. Le cuesta el volumen de core.",
+        pesos:[[dia(70),85],[dia(42),83.5],[dia(21),82.4],[dia(2),82]],
+        sesiones:[{f:dia(12),rutina:"Fuerza A",hechas:9,total:10,sens:3,com:"Me costó el último bloque"},{f:dia(9),rutina:"Fuerza B",hechas:10,total:10,sens:4,com:""},{f:dia(5),rutina:"Fuerza A",hechas:10,total:10,sens:4,com:"Subí 2 kg en peso muerto"},{f:dia(2),rutina:"Fuerza B",hechas:10,total:10,sens:5,com:"Me sentí muy bien"}]},
+      {id:"a2",nombre:"Lucía Romero",edad:34,altura:165,tel:"387 555 0102",inicio:dia(35),objetivo:"Volver a entrenar después de una pausa",nivel:"Principiante",dias:2,
+        lesiones:"Rodilla izquierda: sin saltos por ahora.",notas:"Prefiere entrenar a la mañana. Mandarle siempre alternativa sin impacto.",
+        pesos:[[dia(35),66],[dia(14),65.2]],
+        sesiones:[{f:dia(24),rutina:"Base 1",hechas:8,total:10,sens:2,com:"Me dolió un poco la rodilla"},{f:dia(17),rutina:"Base 1",hechas:9,total:10,sens:3,com:""},{f:dia(11),rutina:"Base 2",hechas:10,total:10,sens:3,com:"Mejor que la semana pasada"}]},
+      {id:"a3",nombre:"Tomás Aguirre",edad:21,altura:183,tel:"387 555 0103",inicio:dia(90),objetivo:"Preparación física para rugby",nivel:"Avanzado",dias:4,
+        lesiones:"Sin lesiones.",notas:"Pretemporada. Foco en potencia y velocidad.",
+        pesos:[[dia(90),88],[dia(45),90.5],[dia(4),91.5]],
+        sesiones:[{f:dia(7),rutina:"Potencia 1",hechas:12,total:12,sens:5,com:""},{f:dia(5),rutina:"Fuerza A",hechas:11,total:12,sens:4,com:""},{f:dia(3),rutina:"Potencia 2",hechas:12,total:12,sens:5,com:"Quiero más carga"},{f:dia(1),rutina:"Fuerza B",hechas:12,total:12,sens:4,com:""}]},
+      {id:"a4",nombre:"Camila Paz",edad:30,altura:170,tel:"387 555 0104",inicio:dia(3),objetivo:"Tonificar y ganar resistencia",nivel:"Principiante",dias:3,
+        lesiones:"Sin lesiones.",notas:"Alumna nueva. Todavía no entrenó con la app.",pesos:[[dia(3),62]],sesiones:[]}
+    ],
+    rutina:{
+      titulo:"FUERZA A · SEMANA 1",
+      bienvenida:"Dale, esta semana foco en técnica. Si algo te molesta, usá la alternativa y avisame al final.",
+      blocks:[
+        {code:"A1",name:"ENTRADA EN CALOR",series:1,rest:0,ex:[
+          {n:"CARPA",r:"10",f:"CARPA.mp4",kg:false,cue:"Llevá la cadera arriba y empujá el piso.",alt:{n:"Carpa con rodillas apoyadas",f:"",cue:"Mismo movimiento, con las rodillas en el suelo."}},
+          {n:"SPIDERMAN",r:"5/5",f:"SPIDER.mp4",kg:false,cue:"",alt:null},
+          {n:"90-90 ISQUIOS",r:"10/10",f:"ISQUIOS.mp4",kg:false,cue:"",alt:null}]},
+        {code:"B1",name:"EMOM 5 MINUTOS",series:3,rest:45,ex:[
+          {n:"FRENO EN ESTOCADA",r:"2/2",f:"FRENO EN ESTOCADA.mp4",kg:false,cue:"Frená despacio, 3 segundos.",alt:{n:"Sentadilla",f:"sentadilla.gif",cue:"Si te molesta la rodilla, hacé sentadilla con menos recorrido."}},
+          {n:"PUSH UP DESPEGUE",r:"6",f:"PUSH UP DESPEGUE.mp4",kg:false,cue:"Cuerpo en bloque, sin hundir la cintura.",alt:{n:"Flexiones con rodillas apoyadas",f:"flexiones.gif",cue:"Bajá el pecho hasta casi tocar el piso."}}]},
+        {code:"C1",name:"FUERZA",series:4,rest:90,ex:[
+          {n:"PESO MUERTO 1 APOYO",r:"8/8",f:"PESO MUERTO 1 APOYO.mp4",kg:true,cue:"Espalda larga. Cargá lo que puedas controlar.",alt:{n:"Peso muerto con 2 apoyos",f:"",cue:"Misma técnica, con los dos pies apoyados."}},
+          {n:"EMPUJE DE CADERA 1 APOYO",r:"10/10",f:"EMPUJE DE CADERA 1 APOYO.mp4",kg:true,cue:"",alt:null}]}
+      ]
+    }
+  };
+}
+let DB = lsGet(KEY, null) || seed();
+const save = () => lsSet(KEY, DB);
+const alumno = id => DB.alumnos.find(a=>a.id===(id||DB.actual)) || DB.alumnos[0];
+const prom = a => a.sesiones.length ? a.sesiones.reduce((s,x)=>s+x.sens,0)/a.sesiones.length : 0;
+const cumpl = a => { const t = a.sesiones.reduce((s,x)=>s+x.total,0); return t ? Math.round(a.sesiones.reduce((s,x)=>s+x.hechas,0)/t*100) : 0; };
+const ultima = a => a.sesiones.length ? a.sesiones[a.sesiones.length-1].f : null;
+
+let modo = "pa", sel = null, abierto = null;
+
+/* ========================= 1 · PANEL DEL PROFE ========================= */
+function vistaPanel(){
+  if(sel) return vistaFicha(alumno(sel));
+  const act = DB.alumnos.filter(a=>{ const u=ultima(a); return u && diasDesde(u)<=7; }).length;
+  const inact = DB.alumnos.filter(a=>{ const u=ultima(a); return !u || diasDesde(u)>7; }).length;
+  const todas = DB.alumnos.flatMap(a=>a.sesiones), pm = todas.length ? (todas.reduce((s,x)=>s+x.sens,0)/todas.length).toFixed(1) : "–";
+  let h = `<div class="kpis">
+    <div class="kpi"><b>${DB.alumnos.length}</b><span>Alumnos</span></div>
+    <div class="kpi"><b>${act}</b><span>Entrenaron esta semana</span></div>
+    <div class="kpi"><b style="color:${inact?"var(--warn)":"inherit"}">${inact}</b><span>Sin entrenar hace +7 días</span></div>
+    <div class="kpi"><b>${pm}</b><span>Cómo se sienten (1 a 5)</span></div></div>
+    <p class="note">Tocá un alumno para ver su ficha, sus datos y su historial.</p>`;
+  DB.alumnos.forEach(a=>{
+    const u = ultima(a), d = u ? diasDesde(u) : null;
+    h += `<button class="al" onclick="abrirFicha('${a.id}')"><div class="ini">${esc(a.nombre[0])}</div><div class="grow">
+      <div class="nm">${esc(a.nombre)}</div><div class="sub">${esc(a.objetivo)}</div>
+      <div class="tags">
+        <span class="tag ${d==null||d>7?"warn":"good"}">${d==null?"Sin sesiones":d===0?"Entrenó hoy":"Última: hace "+d+(d===1?" día":" días")}</span>
+        ${a.sesiones.length?`<span class="tag">${EMO[Math.round(prom(a))]} ${prom(a).toFixed(1)}</span><span class="tag">${cumpl(a)}% cumplido</span>`:""}
+      </div></div></button>`;
+  });
+  h += `<button class="btn quiet" onclick="reiniciar()">Reiniciar la demo</button>`;
+  return h;
+}
+function abrirFicha(id){ sel = id; render(); window.scrollTo(0,0); }
+function vistaFicha(a){
+  const pesos = a.pesos, pv = pesos.map(p=>p[1]), mn = Math.min(...pv), mx = Math.max(...pv);
+  const ult = a.sesiones.slice(-6);
+  let h = `<button class="btn sm quiet" style="align-self:flex-start" onclick="sel=null;render()">← Todos los alumnos</button>
+  <div class="al" style="cursor:default"><div class="ini">${esc(a.nombre[0])}</div><div class="grow"><div class="nm" style="font-size:18px">${esc(a.nombre)}</div>
+    <div class="sub">Alumno desde el ${fmtF(a.inicio)} · ${a.sesiones.length} sesion${a.sesiones.length===1?"":"es"}</div></div></div>
+
+  <div class="card"><h2>Ficha</h2>
+    <label class="lbl">Objetivo<input class="field" data-a="${a.id}" data-k="objetivo" value="${esc(a.objetivo)}"></label>
+    <div class="grid2"><label class="lbl">Nivel<select class="field" data-a="${a.id}" data-k="nivel">${["Principiante","Intermedio","Avanzado"].map(n=>`<option ${n===a.nivel?"selected":""}>${n}</option>`).join("")}</select></label>
+    <label class="lbl">Días por semana<input class="field" type="number" min="1" max="7" data-a="${a.id}" data-k="dias" data-n="1" value="${a.dias}"></label></div>
+    <label class="lbl">Lesiones o cuidados<textarea class="field mini" data-a="${a.id}" data-k="lesiones">${esc(a.lesiones)}</textarea></label>
+    <label class="lbl">Notas del profe (solo las ves vos)<textarea class="field mini" data-a="${a.id}" data-k="notas">${esc(a.notas)}</textarea></label></div>
+
+  <div class="card"><h2>Datos</h2>
+    <div class="fld3"><label class="lbl">Edad<input class="field" type="number" data-a="${a.id}" data-k="edad" data-n="1" value="${a.edad}"></label>
+    <label class="lbl">Altura (cm)<input class="field" type="number" data-a="${a.id}" data-k="altura" data-n="1" value="${a.altura}"></label>
+    <label class="lbl">Peso (kg)<input class="field" value="${pv[pv.length-1]}" disabled></label></div>
+    <label class="lbl">WhatsApp<input class="field" data-a="${a.id}" data-k="tel" value="${esc(a.tel)}"></label>
+    <div><div class="section-label" style="margin-bottom:6px">Evolución del peso</div>
+    <div class="bars">${pesos.map(p=>`<div class="c"><b>${p[1]}</b><i style="height:${28+(mx===mn?30:(p[1]-mn)/(mx-mn)*60)}px"></i>${fmtF(p[0])}</div>`).join("")}</div></div>
+    <div class="row"><input class="field grow" id="npeso" type="number" step="0.1" inputmode="decimal" placeholder="Peso de hoy (kg)"><button class="btn solid" onclick="sumarPeso('${a.id}')">Registrar</button></div></div>
+
+  <div class="card"><h2>Cómo se siente al entrenar</h2>`;
+  if(!a.sesiones.length) h += `<p class="note">Todavía no mandó ninguna sesión. Cuando termine una rutina, acá aparece lo que cuenta.</p>`;
+  else {
+    h += `<div class="bars">${ult.map(s=>`<div class="c"><b>${EMO[s.sens]}</b><i style="height:${s.sens*15}px"></i>${fmtF(s.f)}</div>`).join("")}</div>
+    <div class="note">Promedio ${prom(a).toFixed(1)} de 5 · ${cumpl(a)}% de las series cumplidas</div>`;
+    a.sesiones.slice().reverse().forEach(s=>{
+      h += `<div class="ses"><div class="e">${EMO[s.sens]}</div><div><b>${esc(s.rutina)}</b> <small>· ${fmtF(s.f)} · ${s.hechas}/${s.total} series · ${ETQ[s.sens]}</small>${s.com?`<div>“${esc(s.com)}”</div>`:""}</div></div>`;
+    });
+  }
+  h += `</div>
+  <div class="row"><button class="btn solid grow" onclick="DB.actual='${a.id}';save();go('ed')">Armar rutina</button>
+  <button class="btn grow" onclick="DB.actual='${a.id}';save();go('vi')">Ver cómo la ve</button></div>`;
+  return h;
+}
+function sumarPeso(id){
+  const v = parseFloat($("npeso").value); if(!v) return;
+  alumno(id).pesos.push([dia(0), v]); save(); render();
+}
+function reiniciar(){ if(confirm("¿Volver la demo a como estaba al principio?")){ DB = seed(); save(); sel=null; render(); } }
+
+/* ========================= 2 · ARMAR RUTINA ========================= */
+function vistaEditor(){
+  const R = DB.rutina, a = alumno();
+  let h = `<div class="card"><h2>Para quién es</h2>
+    <label class="lbl">Alumno<select class="field" data-r="alumno">${DB.alumnos.map(x=>`<option value="${x.id}" ${x.id===a.id?"selected":""}>${esc(x.nombre)}</option>`).join("")}</select></label>
+    ${a.lesiones && a.lesiones!=="Sin lesiones."?`<div class="altbox"><b>Ficha de ${esc(a.nombre.split(" ")[0])}</b><span style="font-size:14px">${esc(a.lesiones)}</span></div>`:""}
+    <label class="lbl">Título<input class="field" data-r="titulo" value="${esc(R.titulo)}"></label>
+    <label class="lbl">Mensaje para el alumno (aparece arriba del link)<textarea class="field mini" data-r="bienvenida">${esc(R.bienvenida)}</textarea></label></div>
+  <p class="note">En la app real las rutinas se arman pegando el plan, como ya funciona. Acá se ven los campos nuevos.</p>`;
+  R.blocks.forEach((b,bi)=>{
+    h += `<div class="bedit"><div class="bgrid" style="grid-template-columns:64px 1fr 60px 72px">
+      <label class="lbl">Bloque<input class="field" data-b="${bi}" data-k="code" value="${esc(b.code)}"></label>
+      <label class="lbl">Detalle<input class="field" data-b="${bi}" data-k="name" value="${esc(b.name)}"></label>
+      <label class="lbl">Series<input class="field" type="number" min="1" data-b="${bi}" data-k="series" data-n="1" value="${b.series}"></label>
+      <label class="lbl">Descanso (s)<input class="field" type="number" min="0" step="5" data-b="${bi}" data-k="rest" data-n="1" value="${b.rest}"></label></div>`;
+    b.ex.forEach((e,ei)=>{
+      h += `<div class="exedit"><div class="thumb ${e.f?"ok":""}">${e.f?media(e.f):"sin GIF"}</div>
+        <input class="field" data-b="${bi}" data-e="${ei}" data-k="n" value="${esc(e.n)}" aria-label="Ejercicio">
+        <input class="field" data-b="${bi}" data-e="${ei}" data-k="r" value="${esc(e.r)}" aria-label="Repeticiones">
+        <div class="opts" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%">
+          <input class="field" data-b="${bi}" data-e="${ei}" data-k="cue" value="${esc(e.cue)}" placeholder="Nota para el alumno (ej: bajá lento)">
+          <label class="chk"><input type="checkbox" data-b="${bi}" data-e="${ei}" data-k="kg" ${e.kg?"checked":""}> Pide kilos</label>
+          <details ${e.alt?"open":""}><summary>Alternativa ${e.alt?"· "+esc(e.alt.n):"(por si no puede hacerlo)"}</summary>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+              <input class="field" data-b="${bi}" data-e="${ei}" data-alt="n" value="${esc(e.alt?e.alt.n:"")}" placeholder="Ejercicio alternativo">
+              <input class="field" data-b="${bi}" data-e="${ei}" data-alt="cue" value="${esc(e.alt?e.alt.cue:"")}" placeholder="Cuándo usarla o cómo hacerla"></div></details></div></div>`;
+    });
+    h += `</div>`;
+  });
+  h += `<button class="btn solid" onclick="go('vi')">Ver cómo lo ve ${esc(a.nombre.split(" ")[0])}</button>`;
+  return h;
+}
+document.addEventListener("change", ev=>{
+  const el = ev.target, d = el.dataset, R = DB.rutina;
+  if(d.a){ const a = alumno(d.a); a[d.k] = d.n ? (+el.value||0) : el.value.trim(); save(); return; }
+  if(d.r){ if(d.r==="alumno"){ DB.actual = el.value; DB.prog = {done:{},kg:{},alt:{},sens:0,com:""}; save(); render(); return; } R[d.r] = el.value; save(); return; }
+  if(d.b!=null){
+    const b = R.blocks[+d.b];
+    if(d.e==null){ b[d.k] = d.n ? Math.max(0,+el.value||0) : el.value.trim(); }
+    else { const e = b.ex[+d.e];
+      if(d.alt){ if(!e.alt) e.alt = {n:"",f:"",cue:""}; e.alt[d.alt] = el.value.trim(); if(!e.alt.n && !e.alt.cue) e.alt = null; }
+      else e[d.k] = el.type==="checkbox" ? el.checked : el.value.trim(); }
+    save();
+  }
+});
+
+/* ========================= 3 · LO QUE VE EL ALUMNO ========================= */
+const claveEx = (b,ei) => b.code+"_"+ei;
+function vistaAlumno(){
+  const R = DB.rutina, a = alumno(), P = DB.prog;
+  let total = 0, hechas = 0, h = "";
+  R.blocks.forEach(b=>{ total += b.series; hechas += Math.min(P.done[b.code]||0, b.series); });
+  h += `<div class="welcome"><b>Hola ${esc(a.nombre.split(" ")[0])}!</b><br>${esc(R.bienvenida)}</div>
+    <div class="bar"><i style="width:${total?hechas/total*100:0}%"></i></div><div class="note" style="margin-top:-8px">${hechas} de ${total} series hechas</div>`;
+  R.blocks.forEach(b=>{
+    const d = Math.min(P.done[b.code]||0, b.series);
+    h += `<section class="block"><div class="bhead"><div class="btitle"><span class="bcode">${esc(b.code)}</span><span class="bname">${esc(b.name)}</span></div><div class="series">`;
+    for(let i=1;i<=b.series;i++) h += `<button class="chip" aria-pressed="${i<=d}" onclick="serie(${R.blocks.indexOf(b)},${i})">${b.series===1?"Hecha":i}</button>`;
+    h += `</div></div>`;
+    if(b.rest>0) h += `<div style="padding:0 14px 12px"><button class="btn sm quiet" onclick="startRest(${b.rest},'Descanso · ${esc(b.code)}')">⏱ Descanso ${b.rest}s</button></div>`;
+    b.ex.forEach((e,ei)=>{
+      const key = claveEx(b,ei), open = abierto===key, usaAlt = e.alt && P.alt[key];
+      const nom = usaAlt ? e.alt.n : e.n, gif = usaAlt ? e.alt.f : e.f, cue = usaAlt ? e.alt.cue : e.cue;
+      h += `<div class="ex"><button class="exbtn" aria-expanded="${open}" onclick="abrir('${key}')"><span class="exname">${esc(nom)}${usaAlt?` <span class="tag warn">alternativa</span>`:""}</span><span class="exreps">${esc(e.r)}</span><span class="caret"></span></button>`;
+      if(open){
+        h += `<div class="detail">`;
+        if(e.alt) h += `<div class="seg"><button aria-pressed="${!usaAlt}" onclick="alt('${key}',false)">Ejercicio original</button><button aria-pressed="${!!usaAlt}" onclick="alt('${key}',true)">No puedo: alternativa</button></div>`;
+        h += `<div class="media">${gif?media(gif):`<div class="ph"><b>${esc(nom)}</b><br>Sin GIF todavía</div>`}</div>`;
+        if(cue) h += `<p class="cue">${esc(cue)}</p>`;
+        if(e.kg) h += `<div class="kg"><label for="kg${key}">Carga</label><input id="kg${key}" type="number" inputmode="decimal" min="0" step="0.5" placeholder="0" value="${esc(P.kg[key]||"")}" oninput="DB.prog.kg['${key}']=this.value;save()"><b>kg</b></div>`;
+        h += `</div>`;
+      }
+      h += `</div>`;
+    });
+    h += `</section>`;
+  });
+  h += `<div class="card"><h2>¿Cómo te sentiste hoy?</h2>
+    <div class="sens">${[1,2,3,4,5].map(n=>`<button aria-pressed="${P.sens===n}" onclick="DB.prog.sens=${n};save();render()"><span>${EMO[n]}</span>${n} · ${ETQ[n]}</button>`).join("")}</div>
+    <textarea class="field mini" id="com" placeholder="¿Algo para contarle al profe? Molestias, dudas, cómo salió..." oninput="DB.prog.com=this.value;save()">${esc(P.com)}</textarea>
+    <button class="btn solid" onclick="enviar()">Enviar mi progreso al profe</button><p id="estado" class="note" style="text-align:center;margin:0"></p></div>
+  <p class="note" style="text-align:center;letter-spacing:.12em;text-transform:uppercase">Coach Luciano Villafane</p>`;
+  return h;
+}
+function serie(bi,n){
+  const b = DB.rutina.blocks[bi], P = DB.prog, ya = (P.done[b.code]||0)===n;
+  P.done[b.code] = ya ? n-1 : n; save();
+  if(!ya && n<b.series && b.rest>0) startRest(b.rest, "Descanso · "+b.code);
+  render();
+}
+function abrir(k){ abierto = abierto===k ? null : k; render(); }
+function alt(k,v){ DB.prog.alt[k] = v; save(); render(); }
+function enviar(){
+  const P = DB.prog, a = alumno(), est = $("estado");
+  if(!P.sens){ est.style.color = "var(--warn)"; est.textContent = "Contale al profe cómo te sentiste (1 a 5)."; return; }
+  let total = 0, hechas = 0; DB.rutina.blocks.forEach(b=>{ total += b.series; hechas += Math.min(P.done[b.code]||0, b.series); });
+  a.sesiones.push({f:dia(0), rutina:DB.rutina.titulo, hechas, total, sens:P.sens, com:P.com.trim()});
+  DB.prog = {done:{},kg:{},alt:{},sens:0,com:""}; save(); stopRest();
+  $("view").innerHTML = `<div class="card" style="text-align:center"><div style="font-size:48px">✅</div><h2>¡Enviado!</h2>
+    <p class="note">En la demo el envío queda guardado en el panel del profe. Mirá la pestaña “Alumnos”: ahí ya aparece esta sesión en la ficha de ${esc(a.nombre.split(" ")[0])}.</p>
+    <button class="btn solid" onclick="sel='${a.id}';go('pa')">Ver la ficha de ${esc(a.nombre.split(" ")[0])}</button></div>`;
+  window.scrollTo(0,0);
+}
+
+/* ========================= Temporizador ========================= */
+let T = null, tick = null;
+const fmt = s => Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+function startRest(sec,label){
+  T = {end:Date.now()+sec*1000, total:sec};
+  const el = $("timer"); el.classList.remove("hide","done"); $("tLbl").textContent = label || "Descanso";
+  clearInterval(tick); tick = setInterval(updTimer,250); updTimer();
+}
+function updTimer(){
+  if(!T) return; const left = Math.ceil((T.end-Date.now())/1000);
+  if(left<=0){ finRest(); return; }
+  $("tLeft").textContent = fmt(left); $("tBar").style.width = (100-left/T.total*100)+"%";
+}
+function addT(s){ if(!T) return; T.end += s*1000; T.total = Math.max(5, T.total+s); updTimer(); }
+function stopRest(){ clearInterval(tick); T = null; $("timer").classList.add("hide"); }
+function finRest(){
+  clearInterval(tick); T = null; const el = $("timer"); el.classList.add("done");
+  $("tLeft").textContent = "¡Ya!"; $("tLbl").textContent = "Siguiente serie"; $("tBar").style.width = "100%";
+  try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
+  try{ const c = new (window.AudioContext||window.webkitAudioContext)(); [0,.25,.5].forEach(t=>{ const o=c.createOscillator(), g=c.createGain(); o.frequency.value=880; g.gain.value=.15; o.connect(g); g.connect(c.destination); o.start(c.currentTime+t); o.stop(c.currentTime+t+.15); }); }catch(e){}
+  setTimeout(()=>{ if(!T) el.classList.add("hide"); }, 4000);
+}
+
+/* ========================= Navegación ========================= */
+function render(){
+  $("tPa").setAttribute("aria-selected", modo==="pa"); $("tEd").setAttribute("aria-selected", modo==="ed"); $("tVi").setAttribute("aria-selected", modo==="vi");
+  const al = modo==="vi";
+  $("eyebrow").textContent = modo==="pa" ? "Panel del profe" : modo==="ed" ? "Armado de rutinas" : "Programa de entrenamiento · " + alumno().nombre;
+  $("title").innerHTML = al ? esc(DB.rutina.titulo) : 'Demo<span class="demo-tag">DEMO</span>';
+  const y = window.scrollY;
+  $("view").innerHTML = modo==="pa" ? vistaPanel() : modo==="ed" ? vistaEditor() : vistaAlumno();
+  window.scrollTo(0,y);
+}
+function go(m){ modo = m; abierto = null; if(m!=="vi") stopRest(); render(); window.scrollTo(0,0); }
+render();
+</script>
+</body>
+</html>

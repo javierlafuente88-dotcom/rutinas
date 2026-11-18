@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rutinas del Profe</title>
+<style>
+  :root{--bg:#12161e;--card:#1b212c;--line:#2b3342;--txt:#eef1f6;--mut:#9aa5b8;--acc:#ff6a2b;--ok:#3ecf8e}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+  header{padding:18px 16px 8px;max-width:760px;margin:auto}
+  h1{margin:0;font-size:22px} .sub{color:var(--mut);font-size:14px;margin-top:2px}
+  nav{display:flex;gap:8px;max-width:760px;margin:10px auto 0;padding:0 16px}
+  nav button{flex:1;padding:12px;border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:10px;font-size:15px;cursor:pointer}
+  nav button.on{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+  main{max-width:760px;margin:auto;padding:14px 16px 60px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  label{display:block;font-size:12px;color:var(--mut);margin:8px 0 4px}
+  input,select,textarea{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:#0f131a;color:var(--txt);font-size:15px}
+  .row{display:flex;gap:8px} .row>*{flex:1}
+  .btn{padding:11px 14px;border:0;border-radius:10px;background:var(--acc);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+  .btn.sec{background:#2b3342} .btn.ok{background:var(--ok);color:#06210f}
+  .btn.sm{padding:6px 10px;font-size:13px}
+  .gif{width:100%;max-width:320px;aspect-ratio:1/1;object-fit:contain;background:#0f131a;border-radius:12px;display:block;margin:8px auto}
+  .ex{display:flex;gap:12px;align-items:center}
+  .ex img{width:72px;height:72px;border-radius:10px;object-fit:contain;background:#0f131a}
+  .ex .t{flex:1} .ex .t b{display:block} .ex .t span{color:var(--mut);font-size:13px}
+  .tag{display:inline-block;background:#2b3342;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--mut)}
+  .sets{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .sets label{display:flex;align-items:center;gap:6px;margin:0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-size:14px}
+  .sets input{width:auto}
+  details summary{cursor:pointer;color:var(--acc);font-weight:600}
+  code{background:#0f131a;padding:2px 6px;border-radius:6px;font-size:13px}
+  .hide{display:none} .mut{color:var(--mut);font-size:13px}
+  ol{padding-left:20px;line-height:1.6;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Rutinas del Profe</h1>
+  <div class="sub" id="sub">Armá la rutina y mandásela al alumno con los GIFs</div>
+</header>
+<nav id="tabs">
+  <button id="tabEd" class="on" onclick="go('ed')">1. Editor del profe</button>
+  <button id="tabAl" onclick="go('al')">2. Lo que ve el alumno</button>
+</nav>
+
+<main>
+<!-- ============ EDITOR ============ -->
+<section id="ed">
+  <div class="card">
+    <div class="row">
+      <div><label>Alumno</label><input id="alumno" placeholder="Ej: Javi"></div>
+      <div><label>Nombre de la rutina</label><input id="titulo" placeholder="Ej: Día 1 · Piernas"></div>
+    </div>
+    <label>Mensaje para el alumno (opcional)</label>
+    <input id="mensaje" placeholder="Ej: Calentá 10 min antes. Cualquier duda me escribís.">
+  </div>
+
+  <div class="card">
+    <b>Agregar ejercicio</b>
+    <label>Ejercicio (sale de la carpeta <code>gifs/</code>)</label>
+    <select id="selEj" onchange="prev()"></select>
+    <img id="prevImg" class="gif" alt="">
+    <div class="row">
+      <div><label>Series</label><input id="series" type="number" min="1" value="4"></div>
+      <div><label>Repeticiones</label><input id="reps" value="12"></div>
+      <div><label>Descanso</label><input id="desc" value="60 seg"></div>
+    </div>
+    <label>Nota (opcional)</label>
+    <input id="nota" placeholder="Ej: Bajar lento, espalda recta">
+    <div style="margin-top:12px"><button class="btn" onclick="add()">+ Agregar a la rutina</button></div>
+  </div>
+
+  <div class="card">
+    <b>Rutina armada</b> <span class="tag" id="cnt">0 ejercicios</span>
+    <div id="lista" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn sec" onclick="go('al')">Ver como alumno</button>
+      <button class="btn ok" onclick="wsp()">Mandar por WhatsApp</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn sec" onclick="copiar()">Copiar link</button>
+      <button class="btn sec" onclick="limpiar()">Empezar de nuevo</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary>¿Cómo cargo un GIF nuevo?</summary>
+      <ol>
+        <li>Entrá a GitHub → repositorio <code>rutinas</code> → carpeta <code>gifs</code>.</li>
+        <li><b>Add file → Upload files</b>, arrastrá el GIF y tocá <b>Commit changes</b>.</li>
+        <li>Esperá 1 o 2 minutos y recargá esta página: el ejercicio aparece solo en la lista.</li>
+      </ol>
+      <p class="mut">El nombre del archivo es el nombre del ejercicio: <code>press-banca.gif</code> aparece como "Press banca". Usá minúsculas y guiones, sin tildes.</p>
+      <p class="mut" id="origen"></p>
+    </details>
+  </div>
+</section>
+
+<!-- ============ ALUMNO ============ -->
+<section id="al" class="hide">
+  <div id="vista"></div>
+</section>
+</main>
+
+<script>
+/* ---------- Configuración ---------- */
+// Si la lista automática falla (sin internet, límite de GitHub), se usa esta lista manual.
+// Para agregar uno a mano: una línea con el nombre del archivo dentro de gifs/
+const GIFS_MANUAL = ["sentadilla.gif", "flexiones.gif"];
+
+const host = location.hostname.endsWith("github.io");
+const OWNER = host ? location.hostname.split(".")[0] : "javierlafuente88-dotcom";
+const REPO  = host ? (location.pathname.split("/")[1] || "rutinas") : "rutinas";
+const DIR   = host ? location.pathname.split("/").slice(2,-1).join("/") : "";   // carpeta donde vive esta página
+const GIFDIR = (DIR ? DIR + "/" : "") + "gifs";
+
+/* ---------- Estado ---------- */
+let catalogo = [];                       // [{file, nombre}]
+let rutina = {alumno:"", titulo:"", mensaje:"", ej:[]};
+const $ = id => document.getElementById(id);
+const bonito = f => { const n = f.replace(/\.gif$/i,"").replace(/[-_]+/g," "); return n.charAt(0).toUpperCase()+n.slice(1); };
+const esc = s => String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- Catálogo de GIFs ---------- */
+async function cargarCatalogo(){
+  let files = [], origen = "Lista manual (GIFS_MANUAL en el código).";
+  try{
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${GIFDIR}`);
+    if(!r.ok) throw 0;
+    files = (await r.json()).filter(x=>/\.gif$/i.test(x.name)).map(x=>x.name);
+    origen = `Lista automática desde GitHub (${OWNER}/${REPO}/${GIFDIR}).`;
+  }catch(e){ files = GIFS_MANUAL; }
+  if(!files.length) files = GIFS_MANUAL;
+  catalogo = files.sort().map(f=>({file:f,nombre:bonito(f)}));
+  $("selEj").innerHTML = catalogo.map(c=>`<option value="${esc(c.file)}">${esc(c.nombre)}</option>`).join("");
+  $("origen").textContent = origen;
+  prev();
+}
+function prev(){ const f=$("selEj").value; $("prevImg").src = f ? "gifs/"+encodeURIComponent(f) : ""; }
+
+/* ---------- Editor ---------- */
+function leerCampos(){ rutina.alumno=$("alumno").value.trim(); rutina.titulo=$("titulo").value.trim(); rutina.mensaje=$("mensaje").value.trim(); }
+function add(){
+  const f=$("selEj").value; if(!f) return;
+  rutina.ej.push({g:f, s:+$("series").value||1, r:$("reps").value, d:$("desc").value, n:$("nota").value.trim()});
+  $("nota").value=""; guardar(); pintarLista();
+}
+function pintarLista(){
+  $("cnt").textContent = rutina.ej.length+" ejercicio"+(rutina.ej.length===1?"":"s");
+  $("lista").innerHTML = rutina.ej.map((e,i)=>`
+    <div class="ex card" style="padding:10px">
+      <img src="gifs/${encodeURIComponent(e.g)}" alt="">
+      <div class="t"><b>${esc(bonito(e.g))}</b><span>${e.s} x ${esc(e.r)} · descanso ${esc(e.d)}${e.n?" · "+esc(e.n):""}</span></div>
+      <div>
+        <button class="btn sec sm" onclick="mover(${i},-1)">↑</button>
+        <button class="btn sec sm" onclick="mover(${i},1)">↓</button>
+        <button class="btn sec sm" onclick="quitar(${i})">✕</button>
+      </div>
+    </div>`).join("") || '<p class="mut">Todavía no agregaste ejercicios.</p>';
+}
+function mover(i,d){ const j=i+d; if(j<0||j>=rutina.ej.length) return; [rutina.ej[i],rutina.ej[j]]=[rutina.ej[j],rutina.ej[i]]; guardar(); pintarLista(); }
+function quitar(i){ rutina.ej.splice(i,1); guardar(); pintarLista(); }
+function limpiar(){ if(confirm("¿Borrar la rutina armada?")){ rutina={alumno:"",titulo:"",mensaje:"",ej:[]}; ["alumno","titulo","mensaje"].forEach(k=>$(k).value=""); guardar(); pintarLista(); } }
+function guardar(){ leerCampos(); try{localStorage.setItem("rutina_profe",JSON.stringify(rutina));}catch(e){} }
+
+/* ---------- Link para el alumno ---------- */
+const enc = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const dec = s => JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))));
+function link(){ leerCampos(); return location.origin+location.pathname+"#r="+enc(rutina); }
+function copiar(){ navigator.clipboard.writeText(link()).then(()=>alert("Link copiado. Pegalo en WhatsApp.")); }
+function wsp(){
+  leerCampos();
+  const t = `Hola${rutina.alumno?" "+rutina.alumno:""}! Tu rutina${rutina.titulo?" ("+rutina.titulo+")":""} con los GIFs de cada ejercicio:\n${link()}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
+}
+
+/* ---------- Vista del alumno ---------- */
+function vistaAlumno(){
+  leerCampos();
+  const clave = "prog_"+(rutina.alumno||"")+"_"+(rutina.titulo||"");
+  let prog = {}; try{ prog = JSON.parse(localStorage.getItem(clave)||"{}"); }catch(e){}
+  const cab = `<div class="card"><b style="font-size:18px">${esc(rutina.titulo||"Tu rutina")}</b>
+    <div class="mut">${rutina.alumno?"Alumno: "+esc(rutina.alumno):""}</div>
+    ${rutina.mensaje?`<p>${esc(rutina.mensaje)}</p>`:""}</div>`;
+  if(!rutina.ej.length){ $("vista").innerHTML = cab+'<p class="mut">La rutina todavía no tiene ejercicios.</p>'; return; }
+  $("vista").innerHTML = cab + rutina.ej.map((e,i)=>{
+    const p = prog[i]||{};
+    const sets = Array.from({length:e.s},(_,k)=>`<label><input type="checkbox" data-i="${i}" data-k="${k}" ${p.s&&p.s[k]?"checked":""}> Serie ${k+1}</label>`).join("");
+    return `<div class="card">
+      <b style="font-size:17px">${i+1}. ${esc(bonito(e.g))}</b>
+      <img class="gif" src="gifs/${encodeURIComponent(e.g)}" alt="${esc(bonito(e.g))}">
+      <div><span class="tag">${e.s} series</span> <span class="tag">${esc(e.r)} reps</span> <span class="tag">descanso ${esc(e.d)}</span></div>
+      ${e.n?`<p class="mut">💡 ${esc(e.n)}</p>`:""}
+      <div class="sets">${sets}</div>
+      <label>Peso que usaste (kg)</label>
+      <input data-peso="${i}" inputmode="decimal" placeholder="Ej: 40" value="${esc(p.kg||"")}">
+    </div>`;
+  }).join("");
+  document.querySelectorAll("#vista [data-k]").forEach(c=>c.onchange=()=>{ const i=c.dataset.i; prog[i]=prog[i]||{s:[]}; prog[i].s=prog[i].s||[]; prog[i].s[c.dataset.k]=c.checked; salvar(); });
+  document.querySelectorAll("#vista [data-peso]").forEach(c=>c.oninput=()=>{ const i=c.dataset.peso; prog[i]=prog[i]||{}; prog[i].kg=c.value; salvar(); });
+  function salvar(){ try{localStorage.setItem(clave,JSON.stringify(prog));}catch(e){} }
+}
+
+/* ---------- Navegación ---------- */
+function go(v){
+  $("ed").classList.toggle("hide",v!=="ed"); $("al").classList.toggle("hide",v!=="al");
+  $("tabEd").classList.toggle("on",v==="ed"); $("tabAl").classList.toggle("on",v==="al");
+  if(v==="al") vistaAlumno(); else guardar();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Inicio ---------- */
+(async function(){
+  const h = location.hash.match(/^#r=(.+)$/);
+  if(h){                                  // el alumno abre el link: solo ve su rutina
+    try{ rutina = dec(h[1]); }catch(e){}
+    $("tabs").classList.add("hide"); $("ed").classList.add("hide");
+    $("sub").textContent = "Tu rutina de entrenamiento";
+    go("al"); $("tabs").classList.add("hide");
+    return;
+  }
+  try{ const s=localStorage.getItem("rutina_profe"); if(s) rutina=JSON.parse(s); }catch(e){}
+  $("alumno").value=rutina.alumno||""; $("titulo").value=rutina.titulo||""; $("mensaje").value=rutina.mensaje||"";
+  ["alumno","titulo","mensaje"].forEach(k=>$(k).addEventListener("input",guardar));
+  pintarLista(); await cargarCatalogo();
+})();
+</script>
+</body>
+</html>

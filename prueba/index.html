@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rutinas del Profe</title>
+<title>Coach Luciano Villafane · Rutinas</title>
+<meta name="description" content="Tu rutina de entrenamiento con el GIF de cada ejercicio.">
+<meta property="og:title" content="Coach Luciano Villafane · Tu rutina de entrenamiento">
+<meta property="og:description" content="Tu rutina con el GIF de cada ejercicio. Tocá el link y empezá a entrenar.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
 :root{--bg:#f3f2ef;--surface:#fff;--surface-2:#ebeae6;--fg:#1b1c20;--muted:#62646c;--line:#d9d8d3;--accent:#c2410c;--accent-fg:#fff;--ok:#15803d;--danger:#b91c1c;--warn:#b45309;
@@ -15,6 +18,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 h1{font-family:var(--font-display);font-size:38px;line-height:1;margin:0;text-transform:uppercase}
 h2{font-family:var(--font-display);font-size:20px;letter-spacing:.08em;text-transform:uppercase;margin:0}
+.marca{font-family:var(--font-display);font-size:16px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
 .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
 .note{margin:0;font-size:13px;color:var(--muted)}
@@ -75,7 +79,7 @@ ol.steps{padding-left:20px;margin:8px 0;line-height:1.55;font-size:14px}code{bac
 </head>
 <body>
 <div class="wrap">
-  <div><div class="eyebrow" id="eyebrow">Armado de rutinas</div><h1 id="title">Rutinas del Profe</h1></div>
+  <div><div class="marca" id="marca"></div><div class="eyebrow" id="eyebrow">Armado de rutinas</div><h1 id="title">Rutinas del Profe</h1></div>
   <div class="tabs" id="tabs">
     <button id="tEd" aria-selected="true" onclick="go('ed')">1 · Editor del profe</button>
     <button id="tAl" aria-selected="false" onclick="go('al')">2 · Lo que ve el alumno</button>
@@ -86,6 +90,8 @@ ol.steps{padding-left:20px;margin:8px 0;line-height:1.55;font-size:14px}code{bac
 
 <script>
 /* ================= Configuración ================= */
+const MARCA_DEFAULT = "Coach Luciano Villafane";   // nombre que aparece en la rutina y en el mensaje
+const PLANILLA_URL = "";   // opcional: pegá acá el link /exec y los links salen todavía más cortos
 const GIFS_MANUAL = ["soga-viborita.mp4"];   // se usa solo si GitHub no devuelve la lista de archivos
 const host = location.hostname.endsWith("github.io");
 const OWNER = host ? location.hostname.split(".")[0] : "javierlafuente88-dotcom";
@@ -111,6 +117,7 @@ const lsSet = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch(
 let files = [];                                  // archivos disponibles en gifs/
 let mem = lsGet("rp_mem", {});                   // nombre de ejercicio -> archivo (lo que el profe ya eligió antes)
 let S = lsGet("rp_state", {titulo:"", alumno:"", url:"", blocks:[]});
+if(!S.marca) S.marca = MARCA_DEFAULT;
 let modo = "ed", abierto = null, pick = null, P = {done:{}, kg:{}};
 const guardar = () => lsSet("rp_state", S);
 
@@ -188,6 +195,7 @@ function vistaEditor(){
   </div>
   <div class="card">
     <h2>2. Datos de la rutina</h2>
+    <label class="lbl">Tu marca (aparece en la rutina y en el mensaje)<input class="field" data-f="marca" value="${esc(S.marca)}"></label>
     <div class="row"><label class="lbl grow">Título<input class="field" data-f="titulo" value="${esc(S.titulo)}"></label>
     <label class="lbl grow">Alumno<input class="field" data-f="alumno" value="${esc(S.alumno)}" placeholder="Ej: Marcos"></label></div>
   </div>`;
@@ -222,7 +230,7 @@ function vistaEditor(){
   <div class="card">
     <h2>Conexión con la planilla</h2>
     <label class="lbl">Link de la planilla (termina en /exec)<input class="field" data-f="url" value="${esc(S.url)}" placeholder="https://script.google.com/macros/s/.../exec"></label>
-    <p class="note">Con esto cargado, el alumno ve el botón "Enviar mi progreso" y lo que anota llega a tu planilla.</p>
+    <p class="note">Con esto cargado, los links a los alumnos salen cortos (con tu rutina guardada en la planilla) y el alumno ve el botón "Enviar mi progreso", que llega a tu planilla.</p>
   </div>
   <div class="card">
     <h2>Tus GIFs y videos</h2>
@@ -271,19 +279,57 @@ function elegir(i){
 
 /* ---------- Link ---------- */
 function payload(){
-  return {t:S.titulo, a:S.alumno, u:S.url, b:S.blocks.map(b=>[b.code,b.name,b.series,b.ex.map(e=>[e.n,e.r,e.u||"",e.f||"",e.kg?1:0,e.cue||""])])};
+  return {m:S.marca, t:S.titulo, a:S.alumno, u:S.url, b:S.blocks.map(b=>[b.code,b.name,b.series,b.ex.map(e=>[e.n,e.r,e.u||"",e.f||"",e.kg?1:0,e.cue||""])])};
 }
-function linkAlumno(){ return location.origin + location.pathname + "#r=" + enc(payload()); }
-function mostrarLink(){
-  if(!S.blocks.length){ $("linkArea").innerHTML = '<p class="note">Armá primero la rutina.</p>'; return; }
-  const l = linkAlumno();
-  const msg = `Hola${S.alumno?" "+S.alumno:""}! Tu rutina${S.titulo?" ("+S.titulo+")":""} con los GIFs de cada ejercicio:\n${l}`;
-  $("linkArea").innerHTML = `<div class="linkbox">${esc(l)}</div>
+function desdePayload(o){
+  return {marca:o.m||MARCA_DEFAULT, titulo:o.t||"", alumno:o.a||"", url:o.u||"",
+    blocks:o.b.map(b=>({code:b[0],name:b[1],series:b[2],ex:b[3].map(e=>({n:e[0],r:e[1],u:e[2],f:e[3],kg:!!e[4],cue:e[5]}))}))};
+}
+const b64u = bytes => { let t=""; bytes.forEach(x=>t+=String.fromCharCode(x)); return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); };
+const unb64u = t => Uint8Array.from(atob(t.replace(/-/g,"+").replace(/_/g,"/")), c=>c.charCodeAt(0));
+async function bytesDe(stream){ return new Uint8Array(await new Response(stream).arrayBuffer()); }
+async function linkLargo(){                      // sin planilla: toda la rutina viaja dentro del link, comprimida
+  const base = location.origin + location.pathname, json = JSON.stringify(payload());
+  if(typeof CompressionStream !== "undefined"){
+    const cs = new CompressionStream("deflate-raw"), w = cs.writable.getWriter();
+    w.write(new TextEncoder().encode(json)); w.close();
+    return base + "#z=" + b64u(await bytesDe(cs.readable));
+  }
+  return base + "#r=" + enc(payload());
+}
+const planillaBase = () => PLANILLA_URL || S.url;
+const deployId = u => (u.split("/s/")[1]||"").split("/")[0];
+const urlDeploy = id => "https://script.google.com/macros/s/" + id + "/exec";
+const nuevoId = () => Array.from({length:6},()=>"abcdefghjkmnpqrstuvwxyz23456789"[Math.floor(Math.random()*31)]).join("");
+async function existeRutina(base,id){ try{ const r = await fetch(base+"?id="+id); const j = await r.json(); return !!j.ok; }catch(e){ return false; } }
+
+let linkActual = "";
+async function mostrarLink(){
+  const area = $("linkArea");
+  if(!S.blocks.length){ area.innerHTML = '<p class="note">Armá primero la rutina.</p>'; return; }
+  area.innerHTML = '<p class="note">Generando el link...</p>';
+  let link = "", aviso = ""; const base = planillaBase();
+  if(base && /^https:\/\/script\.google\.com\//.test(base)){
+    const id = nuevoId();
+    try{
+      await fetch(base,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify({accion:"guardarRutina", id, alumno:S.alumno, rutina:S.titulo, datos:payload()})});
+      let ok = false;
+      for(let i=0;i<3 && !ok;i++){ await new Promise(r=>setTimeout(r,1200)); ok = await existeRutina(base,id); }
+      if(ok) link = location.origin + location.pathname + "#c=" + id + (PLANILLA_URL ? "" : "@" + deployId(base));
+      else aviso = "No pude guardar la rutina en la planilla. Falta actualizar el script de Google. Por ahora te dejo el link largo.";
+    }catch(e){ aviso = "No hay conexión con la planilla. Te dejo el link largo."; }
+  }
+  if(!link) link = await linkLargo();
+  linkActual = link;
+  const msg = `Hola${S.alumno?" "+S.alumno:""}! Te paso tu rutina${S.titulo?" ("+S.titulo+")":""} con el GIF de cada ejercicio:\n${link}\n\n— ${S.marca}`;
+  area.innerHTML = `${aviso?`<p class="note" style="color:var(--warn)">${esc(aviso)}</p>`:`<span class="tag good">${link.includes("#c=")?"Link corto":"Link completo"}</span>`}
+    <div class="linkbox">${esc(link)}</div>
     <div class="row" style="margin-top:8px"><button class="btn grow" onclick="copiar()">Copiar link</button>
     <a class="btn wa grow" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">WhatsApp</a></div>
     <button class="btn quiet" style="margin-top:8px;width:100%" onclick="go('al')">Ver cómo lo ve el alumno</button>`;
 }
-function copiar(){ navigator.clipboard.writeText(linkAlumno()).then(()=>alert("Link copiado. Pegalo en WhatsApp.")); }
+function copiar(){ navigator.clipboard.writeText(linkActual).then(()=>alert("Link copiado. Pegalo en WhatsApp.")); }
 
 /* ================= ALUMNO ================= */
 const claveProg = () => "rp_prog_" + norm(S.alumno) + "_" + norm(S.titulo);
@@ -310,7 +356,8 @@ function vistaAlumno(){
     });
     h += `</section>`;
   });
-  h += `<div class="card"><button class="btn solid" style="width:100%" onclick="enviar()">Enviar mi progreso al profe</button><p id="estado" class="note" style="text-align:center;margin:0"></p></div>`;
+  h += `<div class="card"><button class="btn solid" style="width:100%" onclick="enviar()">Enviar mi progreso al profe</button><p id="estado" class="note" style="text-align:center;margin:0"></p></div>
+  <p class="note" style="text-align:center;letter-spacing:.12em;text-transform:uppercase">${esc(S.marca)}</p>`;
   return h;
 }
 function serie(code,n){ P.done[code] = (P.done[code]||0)===n ? n-1 : n; lsSet(claveProg(),P); render(); }
@@ -331,6 +378,7 @@ async function enviar(){
 /* ================= Navegación y arranque ================= */
 function render(){
   $("tEd").setAttribute("aria-selected", modo==="ed"); $("tAl").setAttribute("aria-selected", modo==="al");
+  $("marca").textContent = S.marca || MARCA_DEFAULT;
   $("title").textContent = modo==="al" ? (S.titulo||"Tu rutina") : "Rutinas del Profe";
   $("eyebrow").textContent = modo==="al" ? ("Programa de entrenamiento" + (S.alumno?" · "+S.alumno:"")) : "Armado de rutinas";
   const y = window.scrollY;
@@ -353,15 +401,27 @@ document.addEventListener("change", ev=>{
 });
 
 (async function(){
-  const h = location.hash.match(/^#r=(.+)$/);
+  const hash = location.hash;
   await cargarArchivos();
-  if(h){                                          // el alumno abre su link
+  let m;
+  if(hash.startsWith("#c=") || hash.startsWith("#z=") || hash.startsWith("#r=")){   // el alumno abre su link
+    $("tabs").classList.add("hide"); modo = "al";
+    $("view").innerHTML = '<p class="note">Cargando tu rutina...</p>';
     try{
-      const o = dec(h[1]);
-      S = {titulo:o.t||"", alumno:o.a||"", url:o.u||"",
-        blocks:o.b.map(b=>({code:b[0],name:b[1],series:b[2],ex:b[3].map(e=>({n:e[0],r:e[1],u:e[2],f:e[3],kg:!!e[4],cue:e[5]}))}))};
-    }catch(e){}
-    $("tabs").classList.add("hide"); modo = "al"; render(); return;
+      if((m = hash.match(/^#c=([a-z0-9]+)(?:@(.+))?$/))){
+        const base = PLANILLA_URL || (m[2] ? urlDeploy(m[2]) : "");
+        const r = await fetch(base + "?id=" + m[1]); const j = await r.json();
+        if(!j.ok) throw 0;
+        S = desdePayload(j.data); S.url = base;
+      } else if(hash.startsWith("#z=")){
+        const ds = new DecompressionStream("deflate-raw"), w = ds.writable.getWriter();
+        w.write(unb64u(hash.slice(3))); w.close();
+        S = desdePayload(JSON.parse(new TextDecoder().decode(await bytesDe(ds.readable))));
+      } else { S = desdePayload(dec(hash.slice(3))); }
+      document.title = (S.marca||MARCA_DEFAULT) + " · " + (S.titulo||"Tu rutina");
+      render();
+    }catch(e){ $("view").innerHTML = '<p class="note">No pude abrir esta rutina. Pedile a tu coach que te mande el link de nuevo.</p>'; }
+    return;
   }
   reemparejar(true); render();
 })();

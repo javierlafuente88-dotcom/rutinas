@@ -9,6 +9,7 @@ function doPost(e) {
   try {
     const d = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (d.accion === "guardarRutina") return guardarRutina(ss, d);   // rutinas con link corto
     const registro = ss.getSheetByName("Registro");
     const ahora = new Date();
     const alumno = String(d.alumno || "").trim() || "(sin nombre)";
@@ -40,9 +41,29 @@ function doPost(e) {
   }
 }
 
-// Sirve para comprobar en el navegador que la publicación funciona.
-function doGet() {
-  return ContentService.createTextOutput("La planilla está recibiendo datos correctamente.");
+// Sin parámetros: sirve para comprobar que la publicación funciona.
+// Con ?id=xxxxxx: devuelve la rutina guardada con ese código (lo usa el link corto del alumno).
+function doGet(e) {
+  const id = e && e.parameter && e.parameter.id;
+  if (!id) return ContentService.createTextOutput("La planilla está recibiendo datos correctamente.");
+  const hoja = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Rutinas");
+  if (!hoja) return salida({ ok: false });
+  const celda = hoja.getRange("A:A").createTextFinder(String(id)).matchEntireCell(true).findNext();
+  if (!celda) return salida({ ok: false });
+  return salida({ ok: true, data: JSON.parse(hoja.getRange(celda.getRow(), 5).getValue()) });
+}
+
+// Guarda una rutina con un código corto. La hoja "Rutinas" se crea sola la primera vez.
+function guardarRutina(ss, d) {
+  if (!/^[a-z0-9]{4,12}$/.test(String(d.id || ""))) return salida({ ok: false, error: "código inválido" });
+  let hoja = ss.getSheetByName("Rutinas");
+  if (!hoja) {
+    hoja = ss.insertSheet("Rutinas");
+    hoja.appendRow(["Código", "Fecha", "Alumno", "Rutina", "Datos"]);
+    hoja.setFrozenRows(1);
+  }
+  hoja.appendRow([d.id, new Date(), String(d.alumno || ""), String(d.rutina || ""), JSON.stringify(d.datos || {})]);
+  return salida({ ok: true });
 }
 
 function agregarSiFalta(hoja, valor) {

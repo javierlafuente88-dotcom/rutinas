@@ -21,9 +21,9 @@
   .btn{padding:11px 14px;border:0;border-radius:10px;background:var(--acc);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
   .btn.sec{background:#2b3342} .btn.ok{background:var(--ok);color:#06210f}
   .btn.sm{padding:6px 10px;font-size:13px}
-  .gif{width:100%;max-width:320px;aspect-ratio:1/1;object-fit:contain;background:#0f131a;border-radius:12px;display:block;margin:8px auto}
+  .gif{width:100%;max-width:320px;max-height:60vh;object-fit:contain;background:#0f131a;border-radius:12px;display:block;margin:8px auto}
   .ex{display:flex;gap:12px;align-items:center}
-  .ex img{width:72px;height:72px;border-radius:10px;object-fit:contain;background:#0f131a}
+  .ex img,.ex video{width:72px;height:72px;border-radius:10px;object-fit:contain;background:#0f131a}
   .ex .t{flex:1} .ex .t b{display:block} .ex .t span{color:var(--mut);font-size:13px}
   .tag{display:inline-block;background:#2b3342;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--mut)}
   .sets{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
@@ -61,7 +61,7 @@
     <b>Agregar ejercicio</b>
     <label>Ejercicio (sale de la carpeta <code>gifs/</code>)</label>
     <select id="selEj" onchange="prev()"></select>
-    <img id="prevImg" class="gif" alt="">
+    <div id="prevBox"></div>
     <div class="row">
       <div><label>Series</label><input id="series" type="number" min="1" value="4"></div>
       <div><label>Repeticiones</label><input id="reps" value="12"></div>
@@ -90,10 +90,10 @@
       <summary>¿Cómo cargo un GIF nuevo?</summary>
       <ol>
         <li>Entrá a GitHub → repositorio <code>rutinas</code> → carpeta <code>gifs</code>.</li>
-        <li><b>Add file → Upload files</b>, arrastrá el GIF y tocá <b>Commit changes</b>.</li>
+        <li><b>Add file → Upload files</b>, arrastrá el GIF o el video y tocá <b>Commit changes</b>.</li>
         <li>Esperá 1 o 2 minutos y recargá esta página: el ejercicio aparece solo en la lista.</li>
       </ol>
-      <p class="mut">El nombre del archivo es el nombre del ejercicio: <code>press-banca.gif</code> aparece como "Press banca". Usá minúsculas y guiones, sin tildes.</p>
+      <p class="mut">El nombre del archivo es el nombre del ejercicio: <code>press-banca.gif</code> o <code>press-banca.mp4</code> aparece como "Press banca". Usá minúsculas y guiones, sin tildes.</p>
       <p class="mut" id="origen"></p>
     </details>
   </div>
@@ -109,7 +109,7 @@
 /* ---------- Configuración ---------- */
 // Si la lista automática falla (sin internet, límite de GitHub), se usa esta lista manual.
 // Para agregar uno a mano: una línea con el nombre del archivo dentro de gifs/
-const GIFS_MANUAL = ["sentadilla.gif", "flexiones.gif"];
+const GIFS_MANUAL = ["sentadilla.gif", "flexiones.gif", "soga-viborita.mp4"];
 
 const host = location.hostname.endsWith("github.io");
 const OWNER = host ? location.hostname.split(".")[0] : "javierlafuente88-dotcom";
@@ -121,7 +121,11 @@ const GIFDIR = (DIR ? DIR + "/" : "") + "gifs";
 let catalogo = [];                       // [{file, nombre}]
 let rutina = {alumno:"", titulo:"", mensaje:"", ej:[]};
 const $ = id => document.getElementById(id);
-const bonito = f => { const n = f.replace(/\.gif$/i,"").replace(/[-_]+/g," "); return n.charAt(0).toUpperCase()+n.slice(1); };
+const esVideo = f => /\.(mp4|webm|mov)$/i.test(f);
+const media = (f,cls,alt) => esVideo(f)
+  ? `<video ${cls?`class="${cls}"`:""} src="gifs/${encodeURIComponent(f)}" autoplay loop muted playsinline></video>`
+  : `<img ${cls?`class="${cls}"`:""} src="gifs/${encodeURIComponent(f)}" alt="${esc(alt||"")}">`;
+const bonito = f => { const n = f.replace(/\.(gif|mp4|webm|mov)$/i,"").replace(/[-_]+/g," "); return n.charAt(0).toUpperCase()+n.slice(1); };
 const esc = s => String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 /* ---------- Catálogo de GIFs ---------- */
@@ -130,7 +134,7 @@ async function cargarCatalogo(){
   try{
     const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${GIFDIR}`);
     if(!r.ok) throw 0;
-    files = (await r.json()).filter(x=>/\.gif$/i.test(x.name)).map(x=>x.name);
+    files = (await r.json()).filter(x=>/\.(gif|mp4|webm|mov)$/i.test(x.name)).map(x=>x.name);
     origen = `Lista automática desde GitHub (${OWNER}/${REPO}/${GIFDIR}).`;
   }catch(e){ files = GIFS_MANUAL; }
   if(!files.length) files = GIFS_MANUAL;
@@ -139,7 +143,7 @@ async function cargarCatalogo(){
   $("origen").textContent = origen;
   prev();
 }
-function prev(){ const f=$("selEj").value; $("prevImg").src = f ? "gifs/"+encodeURIComponent(f) : ""; }
+function prev(){ const f=$("selEj").value; $("prevBox").innerHTML = f ? media(f,"gif","") : ""; }
 
 /* ---------- Editor ---------- */
 function leerCampos(){ rutina.alumno=$("alumno").value.trim(); rutina.titulo=$("titulo").value.trim(); rutina.mensaje=$("mensaje").value.trim(); }
@@ -152,7 +156,7 @@ function pintarLista(){
   $("cnt").textContent = rutina.ej.length+" ejercicio"+(rutina.ej.length===1?"":"s");
   $("lista").innerHTML = rutina.ej.map((e,i)=>`
     <div class="ex card" style="padding:10px">
-      <img src="gifs/${encodeURIComponent(e.g)}" alt="">
+      ${media(e.g,"","")}
       <div class="t"><b>${esc(bonito(e.g))}</b><span>${e.s} x ${esc(e.r)} · descanso ${esc(e.d)}${e.n?" · "+esc(e.n):""}</span></div>
       <div>
         <button class="btn sec sm" onclick="mover(${i},-1)">↑</button>
@@ -191,7 +195,7 @@ function vistaAlumno(){
     const sets = Array.from({length:e.s},(_,k)=>`<label><input type="checkbox" data-i="${i}" data-k="${k}" ${p.s&&p.s[k]?"checked":""}> Serie ${k+1}</label>`).join("");
     return `<div class="card">
       <b style="font-size:17px">${i+1}. ${esc(bonito(e.g))}</b>
-      <img class="gif" src="gifs/${encodeURIComponent(e.g)}" alt="${esc(bonito(e.g))}">
+      ${media(e.g,"gif",bonito(e.g))}
       <div><span class="tag">${e.s} series</span> <span class="tag">${esc(e.r)} reps</span> <span class="tag">descanso ${esc(e.d)}</span></div>
       ${e.n?`<p class="mut">💡 ${esc(e.n)}</p>`:""}
       <div class="sets">${sets}</div>

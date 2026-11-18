@@ -73,6 +73,13 @@
   </div>
 
   <div class="card">
+    <b>Conexión con la planilla</b> <span class="tag">una sola vez</span>
+    <label>Link de la planilla (el que te da Google al publicar el script)</label>
+    <input id="planilla" placeholder="https://script.google.com/macros/s/.../exec">
+    <p class="mut">Con esto cargado, cada alumno ve un botón "Enviar mi progreso" y lo que anota llega a tu planilla.</p>
+  </div>
+
+  <div class="card">
     <b>Rutina armada</b> <span class="tag" id="cnt">0 ejercicios</span>
     <div id="lista" style="margin-top:10px"></div>
     <div class="row" style="margin-top:12px">
@@ -119,7 +126,7 @@ const GIFDIR = (DIR ? DIR + "/" : "") + "gifs";
 
 /* ---------- Estado ---------- */
 let catalogo = [];                       // [{file, nombre}]
-let rutina = {alumno:"", titulo:"", mensaje:"", ej:[]};
+let rutina = {alumno:"", titulo:"", mensaje:"", url:"", ej:[]};
 const $ = id => document.getElementById(id);
 const esVideo = f => /\.(mp4|webm|mov)$/i.test(f);
 const media = (f,cls,alt) => esVideo(f)
@@ -146,7 +153,7 @@ async function cargarCatalogo(){
 function prev(){ const f=$("selEj").value; $("prevBox").innerHTML = f ? media(f,"gif","") : ""; }
 
 /* ---------- Editor ---------- */
-function leerCampos(){ rutina.alumno=$("alumno").value.trim(); rutina.titulo=$("titulo").value.trim(); rutina.mensaje=$("mensaje").value.trim(); }
+function leerCampos(){ rutina.url=$("planilla").value.trim(); rutina.alumno=$("alumno").value.trim(); rutina.titulo=$("titulo").value.trim(); rutina.mensaje=$("mensaje").value.trim(); }
 function add(){
   const f=$("selEj").value; if(!f) return;
   rutina.ej.push({g:f, s:+$("series").value||1, r:$("reps").value, d:$("desc").value, n:$("nota").value.trim()});
@@ -167,7 +174,7 @@ function pintarLista(){
 }
 function mover(i,d){ const j=i+d; if(j<0||j>=rutina.ej.length) return; [rutina.ej[i],rutina.ej[j]]=[rutina.ej[j],rutina.ej[i]]; guardar(); pintarLista(); }
 function quitar(i){ rutina.ej.splice(i,1); guardar(); pintarLista(); }
-function limpiar(){ if(confirm("¿Borrar la rutina armada?")){ rutina={alumno:"",titulo:"",mensaje:"",ej:[]}; ["alumno","titulo","mensaje"].forEach(k=>$(k).value=""); guardar(); pintarLista(); } }
+function limpiar(){ if(confirm("¿Borrar la rutina armada?")){ const u=$("planilla").value; rutina={alumno:"",titulo:"",mensaje:"",url:u,ej:[]}; ["alumno","titulo","mensaje"].forEach(k=>$(k).value=""); guardar(); pintarLista(); } }
 function guardar(){ leerCampos(); try{localStorage.setItem("rutina_profe",JSON.stringify(rutina));}catch(e){} }
 
 /* ---------- Link para el alumno ---------- */
@@ -182,9 +189,10 @@ function wsp(){
 }
 
 /* ---------- Vista del alumno ---------- */
+const claveProg = () => "prog_"+(rutina.alumno||"")+"_"+(rutina.titulo||"");
 function vistaAlumno(){
-  leerCampos();
-  const clave = "prog_"+(rutina.alumno||"")+"_"+(rutina.titulo||"");
+  if(!location.hash.startsWith("#r=")) leerCampos();
+  const clave = claveProg();
   let prog = {}; try{ prog = JSON.parse(localStorage.getItem(clave)||"{}"); }catch(e){}
   const cab = `<div class="card"><b style="font-size:18px">${esc(rutina.titulo||"Tu rutina")}</b>
     <div class="mut">${rutina.alumno?"Alumno: "+esc(rutina.alumno):""}</div>
@@ -202,10 +210,28 @@ function vistaAlumno(){
       <label>Peso que usaste (kg)</label>
       <input data-peso="${i}" inputmode="decimal" placeholder="Ej: 40" value="${esc(p.kg||"")}">
     </div>`;
-  }).join("");
+  }).join("") + `<div class="card"><button class="btn ok" style="width:100%" onclick="enviar()">Enviar mi progreso al profe</button>
+    <p id="estado" class="mut" style="text-align:center;margin:10px 0 0"></p></div>`;
   document.querySelectorAll("#vista [data-k]").forEach(c=>c.onchange=()=>{ const i=c.dataset.i; prog[i]=prog[i]||{s:[]}; prog[i].s=prog[i].s||[]; prog[i].s[c.dataset.k]=c.checked; salvar(); });
   document.querySelectorAll("#vista [data-peso]").forEach(c=>c.oninput=()=>{ const i=c.dataset.peso; prog[i]=prog[i]||{}; prog[i].kg=c.value; salvar(); });
   function salvar(){ try{localStorage.setItem(clave,JSON.stringify(prog));}catch(e){} }
+}
+
+/* ---------- Enviar progreso a la planilla ---------- */
+async function enviar(){
+  const est = $("estado");
+  if(!rutina.url){ est.textContent = "Tu profe todavía no conectó la planilla."; return; }
+  let prog = {}; try{ prog = JSON.parse(localStorage.getItem(claveProg())||"{}"); }catch(e){}
+  const ejercicios = rutina.ej.map((e,i)=>{
+    const p = prog[i]||{};
+    return {nombre:bonito(e.g), hechas:(p.s||[]).filter(Boolean).length, pedidas:e.s, kg:p.kg||""};
+  });
+  est.textContent = "Enviando...";
+  try{
+    await fetch(rutina.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({alumno:rutina.alumno, rutina:rutina.titulo, ejercicios})});
+    est.textContent = "✅ Enviado. ¡Buen entrenamiento!";
+  }catch(e){ est.textContent = "No se pudo enviar. Revisá tu internet y probá de nuevo."; }
 }
 
 /* ---------- Navegación ---------- */
@@ -227,8 +253,8 @@ function go(v){
     return;
   }
   try{ const s=localStorage.getItem("rutina_profe"); if(s) rutina=JSON.parse(s); }catch(e){}
-  $("alumno").value=rutina.alumno||""; $("titulo").value=rutina.titulo||""; $("mensaje").value=rutina.mensaje||"";
-  ["alumno","titulo","mensaje"].forEach(k=>$(k).addEventListener("input",guardar));
+  $("planilla").value=rutina.url||""; $("alumno").value=rutina.alumno||""; $("titulo").value=rutina.titulo||""; $("mensaje").value=rutina.mensaje||"";
+  ["alumno","titulo","mensaje","planilla"].forEach(k=>$(k).addEventListener("input",guardar));
   pintarLista(); await cargarCatalogo();
 })();
 </script>

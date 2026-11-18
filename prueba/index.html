@@ -228,7 +228,7 @@ function vistaEditor(){
   h += `
   <div class="card">
     <h2>3. Mandar al alumno</h2>
-    <button class="btn solid" onclick="mostrarLink()">Generar link de la rutina</button>
+    <button class="btn solid" id="btnLink" onclick="mostrarLink()">Generar link de la rutina</button>
     <div id="linkArea"></div>
   </div>
   <div class="card">
@@ -311,7 +311,9 @@ let linkActual = "";
 async function mostrarLink(){
   const area = $("linkArea");
   if(!S.blocks.length){ area.innerHTML = '<p class="note">Armá primero la rutina.</p>'; return; }
-  area.innerHTML = '<p class="note">Generando el link...</p>';
+  area.innerHTML = '<p class="note">Generando el link, esperá unos segundos...</p>';
+  const bt = $("btnLink"); if(bt){ bt.disabled = true; bt.textContent = "Generando..."; }
+  area.scrollIntoView({behavior:"smooth", block:"center"});
   let link = "", aviso = ""; const base = planillaBase();
   if(base && /^https:\/\/script\.google\.com\//.test(base)){
     const id = nuevoId();
@@ -332,6 +334,8 @@ async function mostrarLink(){
     <div class="row" style="margin-top:8px"><button class="btn grow" onclick="copiar()">Copiar link</button>
     <a class="btn wa grow" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">WhatsApp</a></div>
     <button class="btn quiet" style="margin-top:8px;width:100%" onclick="go('al')">Ver cómo lo ve el alumno</button>`;
+  if(bt){ bt.disabled = false; bt.textContent = "Generar link de la rutina"; }
+  area.scrollIntoView({behavior:"smooth", block:"center"});
 }
 function copiar(){ navigator.clipboard.writeText(linkActual).then(()=>alert("Link copiado. Pegalo en WhatsApp.")); }
 
